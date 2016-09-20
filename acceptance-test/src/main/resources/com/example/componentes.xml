@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration
+        xmlns="http://tis.co.jp/nablarch/component-configuration"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration /component-configuration.xsd">
+
+  <!-- PJのドメイン定義を管理するクラスを登録しておく。 -->
+  <component name="domainManager"
+             class="com.example.SampleDomainManager"/>
+
+  <!-- 文字集合の定義をデフォルト設定から読み込み -->
+  <import file="nablarch/core/validation/charset-definition.xml"/>
+
+</component-configuration>
