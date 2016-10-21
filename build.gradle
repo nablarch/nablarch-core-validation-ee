@@ -1,5 +1,5 @@
 group = 'com.nablarch.framework'
-version = '1.0.3'
+version = '1.0.4'
 description = 'BeanValidationバリデーション機能'
 
 buildscript {
@@ -19,8 +19,8 @@ apply plugin: 'com.nablarch.dev.nablarch-sonarqube'
 apply plugin: 'com.nablarch.dev.nablarch-version'
 apply plugin: 'cobertura'
 
-sourceCompatibility=JavaVersion.VERSION_1_7
-targetCompatibility=JavaVersion.VERSION_1_7
+sourceCompatibility=JavaVersion.VERSION_1_6
+targetCompatibility=JavaVersion.VERSION_1_6
 
 dependencies {
   compile "com.nablarch.framework:nablarch-core-validation:${nablarchCoreValidationVersion}"
