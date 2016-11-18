@@ -43,6 +43,25 @@ public class ConstraintViolationConverterTest {
         assertThat(vrm.formatMessage(), is("may not be null"));
     }
 
+    /**
+     * コンストラクタにprefixとして空文字を設定すると、エラーメッセージの
+     * プロパティ名にprefixが付加されないことを確認する.
+     */
+    @Test
+    public void testNotAddEmptyPrefixToPropertyName() {
+        ConstraintViolationConverter sut = new ConstraintViolationConverter("");
+        TestBean bean = new TestBean();
+        Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
+        assertThat(violations.size(), is(1));
+        assertThat(violations.iterator().next().getPropertyPath().toString(), is("name"));
+
+        List<Message> convert = sut.convert(violations);
+        ValidationResultMessage vrm = (ValidationResultMessage) convert.get(0);
+        assertThat(vrm.getPropertyName(), is("name"));
+        assertThat(vrm.getMessageId(), is("javax.validation.constraints.NotNull"));
+        assertThat(vrm.formatMessage(), is("may not be null"));
+    }
+
     static class TestBean {
 
         private String name = null;
