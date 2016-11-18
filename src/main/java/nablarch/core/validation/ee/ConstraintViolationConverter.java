@@ -2,6 +2,7 @@ package nablarch.core.validation.ee;
 
 import nablarch.core.message.Message;
 import nablarch.core.message.StringResource;
+import nablarch.core.util.StringUtil;
 import nablarch.core.util.annotation.Published;
 import nablarch.core.validation.ValidationResultMessage;
 
@@ -34,7 +35,9 @@ public class ConstraintViolationConverter {
      * @param prefix バリデーション対象オブジェクトのプロパティ名に付与するプレフィクス
      */
     public ConstraintViolationConverter(String prefix) {
-        this.prefix = prefix + ".";
+        if (StringUtil.hasValue(prefix)) {
+            this.prefix = prefix + ".";
+        }
     }
 
     /**
