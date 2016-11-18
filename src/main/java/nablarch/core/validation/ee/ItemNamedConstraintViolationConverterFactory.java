@@ -43,7 +43,7 @@ public class ItemNamedConstraintViolationConverterFactory extends ConstraintViol
          * プレフィックスなしで生成する。
          */
         public ItemNamedConstraintViolationConverter() {
-            this.prefix = "";
+            prefix = "";
         }
 
         /**
@@ -52,7 +52,11 @@ public class ItemNamedConstraintViolationConverterFactory extends ConstraintViol
          * @param prefix プレフィックス
          */
         public ItemNamedConstraintViolationConverter(final String prefix) {
-            this.prefix = prefix + '.';
+            if (StringUtil.hasValue(prefix)) {
+                this.prefix = prefix + '.';
+            } else {
+                this.prefix = "";
+            }
         }
 
         @Override
