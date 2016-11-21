@@ -127,6 +127,30 @@ public class ItemNamedConstraintViolationConverterTest {
                 MessageMatcher.is("form.name", "[名前]必須項目です。")
         ));
     }
+    
+    /**
+     * プレフィックス付きの場合でもメッセージが導出できること。
+     *
+     * @throws Exception
+     */
+    @Test
+    public void convertMessageWithEmptyPrefix() throws Exception {
+        // -------------------------------------------------- setup
+        final Parent parent = new Parent();
+        parent.number = "1";
+        parent.children = Collections.singletonList(new Child("name"));
+
+        // -------------------------------------------------- execute
+        final Validator validator = ValidatorUtil.getValidator();
+        final Set<ConstraintViolation<Parent>> constraintViolations = validator.validate(parent);
+        final ConstraintViolationConverter converter = new ItemNamedConstraintViolationConverterFactory().create("");
+        final List<Message> messages = converter.convert(constraintViolations);
+
+        // -------------------------------------------------- assert
+        assertThat(messages, Matchers.contains(
+                MessageMatcher.is("name", "[名前]必須項目です。")
+        ));
+    }
 
     /**
      * 項目名が存在しない場合、メッセージには項目名が付加されないこと
