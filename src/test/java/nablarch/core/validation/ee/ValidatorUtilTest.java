@@ -193,7 +193,7 @@ public class ValidatorUtilTest {
     @Test
     public void testValidateToVarargsNullOrEmpty(){
         try {
-            ValidatorUtil.validate(new SampleBean(), null);
+            ValidatorUtil.validate(new SampleBean(), (String[]) null);
             ValidatorUtil.validate(new SampleBean(), "");
         }catch(ApplicationException e){
             fail("例外は発生しないはず");
