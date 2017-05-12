@@ -58,7 +58,7 @@ public @interface SystemChar {
     Class<? extends Payload>[] payload() default {};
 
     /** 複数指定用のアノテーション */
-    @Target({METHOD, FIELD})
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
