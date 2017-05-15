@@ -12,8 +12,11 @@ import javax.validation.Payload;
 import nablarch.core.util.annotation.Published;
 import nablarch.core.validation.validator.unicode.CharsetDefValidationUtil;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 
 /**
  * システム許容文字で構成された文字列であることを表わすアノテーション。
@@ -38,7 +41,7 @@ import static java.lang.annotation.ElementType.METHOD;
  *
  * @author T.Kawasaki
  */
-@Target({ METHOD, FIELD })
+@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = { SystemChar.SystemCharValidator.class})
@@ -55,7 +58,7 @@ public @interface SystemChar {
     Class<? extends Payload>[] payload() default {};
 
     /** 複数指定用のアノテーション */
-    @Target({METHOD, FIELD})
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
