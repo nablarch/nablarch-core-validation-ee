@@ -214,7 +214,7 @@ public class LengthValidatorTest extends BeanValidationTestCase {
     @Test
     public void testValidateShorterWithSurrogatePair() {
         Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "123\uD867\uDE3D");
-        assertThat(violations, empty());
+        assertThat(violations, not(empty()));
     }
 
     /**
