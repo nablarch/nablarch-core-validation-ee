@@ -138,7 +138,7 @@ public class SystemCharValidatorTest extends BeanValidationTestCase {
      */
     @Test
     public void testSurrogateArrow() {
-        //サロゲートペアを許可する設定を追加でloadする
+        //サロゲートペアを許容する設定を追加でloadする
         SystemRepository.load(new ObjectLoader() {
             public Map<String, Object> load() {
                 SystemCharConfig config = new SystemCharConfig();

@@ -41,11 +41,11 @@ import static java.lang.annotation.ElementType.PARAMETER;
  * </p>
  *
  * <p>
- *   このバリデーションでは、デフォルトではサロゲートペアを許可しない。
- *   （例え{@link nablarch.core.validation.validator.unicode.LiteralCharsetDef LiteralCharsetDef}で明示的にサロゲートペアの文字を定義していても許可しない）
+ *   このバリデーションでは、デフォルトではサロゲートペアを許容しない。
+ *   （例え{@link nablarch.core.validation.validator.unicode.LiteralCharsetDef LiteralCharsetDef}で明示的にサロゲートペアの文字を定義していても許容しない）
  * </p>
  * <p>
- *   サロゲートペアを許可する場合は次のようにコンポーネント設定ファイルに{@link SystemCharConfig}を設定する必要がある。
+ *   サロゲートペアを許容する場合は次のようにコンポーネント設定ファイルに{@link SystemCharConfig}を設定する必要がある。
  * </p>
  * <pre>
  *   {@code <component name="ee.SystemCharConfig" class="nablarch.core.validation.ee.SystemCharConfig">
