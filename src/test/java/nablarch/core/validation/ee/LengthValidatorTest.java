@@ -1,8 +1,8 @@
 package nablarch.core.validation.ee;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsEmptyCollection.*;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -10,7 +10,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import org.hamcrest.collection.IsCollectionWithSize;
-
 import org.junit.Test;
 
 /**
@@ -193,5 +192,39 @@ public class LengthValidatorTest extends BeanValidationTestCase {
         assertThat(violations.iterator().next().getMessage(), is("10文字以内で入力してください。"));
 
         assertThat(validator.validate(bean, PremiumUser.class).size(), is(0));
+    }
+
+    private class SurrogatePair {
+        @Length(min = 5, max = 10)
+        private String test;
+    }
+
+    /**
+     * サロゲートペアを含む文字列の長さがmaxを超えた場合
+     */
+    @Test
+    public void testValidateLongerWithSurrogatePair() {
+        Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "1234567890\uD867\uDE3D");
+        assertThat(violations, not(empty()));
+    }
+
+    /**
+     * サロゲートペアを含む文字列の長さがminを下回った場合
+     */
+    @Test
+    public void testValidateShorterWithSurrogatePair() {
+        Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "123\uD867\uDE3D");
+        assertThat(violations, not(empty()));
+    }
+
+    /**
+     * サロゲートペアを含む文字列の長さが妥当な場合
+     */
+    @Test
+    public void testValidateSuccessWithSurrogatePair() {
+        Set<?> violationsForJustMax = validator.validateValue(SurrogatePair.class, "test", "123456789\uD867\uDE3D");
+        assertThat("Just max", violationsForJustMax, empty());
+        Set<?> violationsForJustMin = validator.validateValue(SurrogatePair.class, "test", "1234\uD867\uDE3D");
+        assertThat("Just min", violationsForJustMin, empty());
     }
 }

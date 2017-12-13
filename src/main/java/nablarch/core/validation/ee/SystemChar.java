@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
+import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.annotation.Published;
 import nablarch.core.validation.validator.unicode.CharsetDefValidationUtil;
 
@@ -39,6 +40,19 @@ import static java.lang.annotation.ElementType.PARAMETER;
  *   このドメイン定義を使用して、バリデーションを行う設定については{@link Domain}のjavadocを参照。
  * </p>
  *
+ * <p>
+ *   このバリデーションでは、デフォルトではサロゲートペアを許可しない。
+ *   （例え{@link nablarch.core.validation.validator.unicode.LiteralCharsetDef LiteralCharsetDef}で明示的にサロゲートペアの文字を定義していても許可しない）
+ * </p>
+ * <p>
+ *   サロゲートペアを許可する場合は次のようにコンポーネント設定ファイルに{@link SystemCharConfig}を設定する必要がある。
+ * </p>
+ * <pre>
+ *   {@code <component name="ee.SystemCharConfig" class="nablarch.core.validation.ee.SystemCharConfig">
+ *     <property name="allowSurrogatePair" value="true"/>
+ *   </component>}
+ * </pre>
+ * 
  * @author T.Kawasaki
  */
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
@@ -87,6 +101,12 @@ public @interface SystemChar {
      */
     class SystemCharValidator implements ConstraintValidator<SystemChar, String> {
 
+        /** {@link SystemRepository}に定義されている設定名 */
+        private static final String CONFIG_NAME = "ee.SystemCharConfig";
+
+        /** デフォルトの設定 */
+        private static final SystemCharConfig DEFAULT_CONFIG = new SystemCharConfig();
+
         /** アノテーション */
         private SystemChar annotation;
 
@@ -102,10 +122,15 @@ public @interface SystemChar {
             if (value == null) {
                 return true;
             }
+            SystemCharConfig config = SystemRepository.get(CONFIG_NAME);
+            if (config == null) {
+                config = DEFAULT_CONFIG;
+            }
             return CharsetDefValidationUtil.isValid(
                     annotation.charsetDef(),           // 許容される文字集合の定義
                     value,                             // バリデーション対象文字列
-                    annotation.allowLineSeparator()    // 改行コードを許容するか
+                    annotation.allowLineSeparator(),    // 改行コードを許容するか
+                    config.isAllowSurrogatePair()
             );
         }
     }

@@ -1,10 +1,14 @@
 package nablarch.core.validation.ee;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.collection.IsCollectionWithSize.*;
+import static org.hamcrest.collection.IsEmptyCollection.*;
+import static org.junit.Assert.*;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -12,6 +16,9 @@ import javax.validation.Validator;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import nablarch.core.repository.ObjectLoader;
+import nablarch.core.repository.SystemRepository;
 
 /**
  * {@link SystemCharValidatorTest}のテストクラス。
@@ -119,5 +126,37 @@ public class SystemCharValidatorTest extends BeanValidationTestCase {
         assertThat(violations.iterator().next().getMessage(), is("英大文字でないですよ。"));
 
         assertThat(validator.validate(bean, PremiumUser.class).size(), is(0));
+    }
+
+    private class SurrogatePair {
+        @SystemChar(charsetDef = "すべてのコードポイント")
+        String test;
+    }
+
+    /**
+     * サロゲートペアを許容する場合、サロゲートペアを含む文字列は非許容と判定されないこと。
+     */
+    @Test
+    public void testSurrogateArrow() {
+        //サロゲートペアを許可する設定を追加でloadする
+        SystemRepository.load(new ObjectLoader() {
+            public Map<String, Object> load() {
+                SystemCharConfig config = new SystemCharConfig();
+                config.setAllowSurrogatePair(true);
+                return Collections.<String, Object> singletonMap("ee.SystemCharConfig", config);
+            }
+        });
+
+        Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "\uD867\uDE3D");
+        assertThat(violations, empty());
+    }
+
+    /**
+     * サロゲートペアを許容しない場合、サロゲートペアを含む文字列は非許容と判定されること。
+     */
+    @Test
+    public void testSurrogateNotArrowed() {
+        Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "\uD867\uDE3D");
+        assertThat(violations, hasSize(1));
     }
 }

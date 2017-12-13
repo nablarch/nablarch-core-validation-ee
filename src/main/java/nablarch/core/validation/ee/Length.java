@@ -29,6 +29,8 @@ import static java.lang.annotation.ElementType.*;
  *     <li>{@link #message()}が未指定で{@link #min()}と{@link #max()}に指定した値が異なる場合は、<b>{nablarch.core.validation.ee.Length.min.max.message}</b></li>
  * </ol>
  * 
+ * 文字列長の計算はサロゲートペアを考慮して行われる。
+ * 
  * @author T.Kawasaki
  */
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
@@ -101,7 +103,7 @@ public @interface Length {
             if (value == null || value.length() == 0) {
                 return true;
             }
-            final int length = value.length();
+            final int length = Character.codePointCount(value, 0, value.length());
 
             if (isValid(length)) {
                 return true;
