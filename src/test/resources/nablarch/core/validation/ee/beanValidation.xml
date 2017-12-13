@@ -19,4 +19,10 @@
     <property name="endCodePoint" value="U+0039"/>
   </component>
 
+  <component name="すべてのコードポイント"
+             class="nablarch.core.validation.validator.unicode.RangedCharsetDef">
+    <property name="startCodePoint" value="U+0000"/><!-- Character#MIN_CODE_POINT -->
+    <property name="endCodePoint" value="U+10FFFF"/><!-- Character#MAX_CODE_POINT -->
+  </component>
+
 </component-configuration>
