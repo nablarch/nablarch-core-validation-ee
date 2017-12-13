@@ -1,7 +1,6 @@
 package nablarch.core.validation.ee;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsCollectionWithSize.*;
 import static org.hamcrest.collection.IsEmptyCollection.*;
 import static org.junit.Assert.*;
 
@@ -215,7 +214,7 @@ public class LengthValidatorTest extends BeanValidationTestCase {
     @Test
     public void testValidateShorterWithSurrogatePair() {
         Set<?> violations = validator.validateValue(SurrogatePair.class, "test", "123\uD867\uDE3D");
-        assertThat(violations, hasSize(1));
+        assertThat(violations, empty());
     }
 
     /**
