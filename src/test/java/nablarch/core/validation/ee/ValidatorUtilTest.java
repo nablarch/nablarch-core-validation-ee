@@ -227,7 +227,7 @@ public class ValidatorUtilTest {
             ValidatorUtil.validate(new SampleBean(), "test1");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
-            assertEquals("HV000039: Invalid property path. There is no property test1 in entity nablarch.core.validation.ee.SampleBean.", e.getMessage());
+            assertTrue(e.getMessage().startsWith("HV000039"));
         }
     }
 
