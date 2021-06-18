@@ -2,8 +2,8 @@ package nablarch.core.validation.ee;
 
 import java.util.Locale;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
 
 import nablarch.core.log.Logger;
 import nablarch.core.log.LoggerManager;

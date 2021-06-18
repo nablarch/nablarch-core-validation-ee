@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.hamcrest.collection.IsCollectionWithSize;
 
