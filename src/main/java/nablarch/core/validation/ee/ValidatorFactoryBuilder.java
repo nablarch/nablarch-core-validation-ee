@@ -2,7 +2,7 @@ package nablarch.core.validation.ee;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ValidatorFactory;
 
 /**
  * {@link ValidatorFactory}を生成するクラス。

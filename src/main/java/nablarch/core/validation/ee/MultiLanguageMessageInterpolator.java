@@ -2,7 +2,7 @@ package nablarch.core.validation.ee;
 
 import java.util.Locale;
 
-import javax.validation.MessageInterpolator;
+import jakarta.validation.MessageInterpolator;
 
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.SystemRepository;
@@ -34,8 +34,8 @@ public class MultiLanguageMessageInterpolator implements MessageInterpolator {
      * 使用する{@link Locale}は、{@link ThreadContext}に設定されている場合はその値を使用し、
      * そうでない場合は{@link Locale#getDefault()}の値を使用する。
      *
-     * @see javax.validation.MessageInterpolator#interpolate(java.lang.String,
-     * javax.validation.MessageInterpolator.Context)
+     * @see jakarta.validation.MessageInterpolator#interpolate(java.lang.String,
+     * jakarta.validation.MessageInterpolator.Context)
      */
     @Override
     public String interpolate(String messageKey, Context context) {
@@ -44,7 +44,7 @@ public class MultiLanguageMessageInterpolator implements MessageInterpolator {
 
     /**
      * {@link Context}に基づいてメッセージテンプレートからメッセージを生成する。<br/>
-     * @see javax.validation.MessageInterpolator#interpolate(java.lang.String, javax.validation.MessageInterpolator.Context, java.util.Locale)
+     * @see jakarta.validation.MessageInterpolator#interpolate(java.lang.String, jakarta.validation.MessageInterpolator.Context, java.util.Locale)
      */
     @Override
     public String interpolate(String messageKey, Context context, Locale locale) {

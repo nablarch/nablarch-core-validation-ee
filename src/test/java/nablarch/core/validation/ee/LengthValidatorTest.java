@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;

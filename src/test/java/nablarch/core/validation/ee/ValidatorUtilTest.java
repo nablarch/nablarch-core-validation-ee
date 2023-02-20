@@ -1,5 +1,6 @@
 package nablarch.core.validation.ee;
 
+import jakarta.validation.ClockProvider;
 import nablarch.core.message.ApplicationException;
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;
@@ -8,13 +9,13 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.validation.ConstraintValidatorFactory;
-import javax.validation.MessageInterpolator;
-import javax.validation.ParameterNameProvider;
-import javax.validation.TraversableResolver;
-import javax.validation.Validator;
-import javax.validation.ValidatorContext;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.ParameterNameProvider;
+import jakarta.validation.TraversableResolver;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorContext;
+import jakarta.validation.ValidatorFactory;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ValidatorUtilTest {
     }
 
     /**
-     * {@link ValidatorFactoryBuilder}を設定していない場合、デフォルトの{@link javax.validation.ValidatorFactory}が取得できること。
+     * {@link ValidatorFactoryBuilder}を設定していない場合、デフォルトの{@link jakarta.validation.ValidatorFactory}が取得できること。
      */
     @Test
     public void testGetDefaultValidatorFactory() {
@@ -53,7 +54,7 @@ public class ValidatorUtilTest {
     }
 
     /**
-     * {@link ValidatorFactoryBuilder}を設定した場合、カスタムの{@link javax.validation.ValidatorFactory}が取得できること。
+     * {@link ValidatorFactoryBuilder}を設定した場合、カスタムの{@link jakarta.validation.ValidatorFactory}が取得できること。
      */
     @Test
     public void testGetCustomValidatorFactory() {
@@ -227,7 +228,7 @@ public class ValidatorUtilTest {
             ValidatorUtil.validate(new SampleBean(), "test1");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
-            assertTrue(e.getMessage().startsWith("HV000039"));
+            assertTrue(e.getMessage().startsWith("HV000227"));
         }
     }
 
@@ -273,6 +274,8 @@ public class ValidatorUtilTest {
         public ConstraintValidatorFactory getConstraintValidatorFactory() { return null; }
         @Override
         public ParameterNameProvider getParameterNameProvider() { return null; }
+        @Override
+        public ClockProvider getClockProvider() { throw new UnsupportedOperationException(); }
         @Override
         public <T> T unwrap(Class<T> aClass) { return null; }
         @Override
