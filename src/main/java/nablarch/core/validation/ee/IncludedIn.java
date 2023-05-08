@@ -30,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *         列挙型が{@link EnValue}を実装していない場合、入力値と列挙型定数の名前（{@link Enum#name()}で取得した値）を比較する。
  *         入力値は{@code String}に制限される（それ以外の場合、実行時エラーが発生する）。
  *         デフォルトでは、比較時に入力値及び列挙型定数の大文字小文字は区別しない。
- *         区別する場合は{@link #caseInsensitive()}を{@link false}に設定する（デフォルト:{@code true}）。
+ *         区別する場合は{@link #caseInsensitive()}を{@code false}に設定する（デフォルト:{@code true}）。
  *     </li>
  *     <li>
  *         列挙型が{@link EnValue}を実装している場合、入力値と{@link EnValue#getValue()}が返却する値を比較する。
@@ -43,11 +43,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * {@link EnValue#getValue()}を実装した列挙型を使用する場合の例を以下に示す。
  * <pre>
  * public class SampleBean {
- *    {@code @IncludedIn(SampleEnum.class})
+ *     {@code @IncludedIn(SampleEnum.class})
  *     String sampleString;
  * }
  *
- * public enum SampleEnum implements EnValue {
+ * public enum SampleEnum implements EnValue{@code <String>} {
  *     ON("1"), OFF("0");
  *
  *     private final String value;
@@ -56,7 +56,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *         this.value = value;
  *     }
  *
- *     @Override
+ *     {@code @Override}
  *     public String getValue() {
  *         return value;
  *     }
@@ -141,7 +141,7 @@ public @interface IncludedIn {
 
             for (Enum<?> e : this.enums) {
                 if (e instanceof EnValue) {
-                    Object enValue = ((EnValue) e).getValue();
+                    Object enValue = ((EnValue<?>) e).getValue();
                     // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
                     if (enValue instanceof String && value instanceof String ||
                         enValue instanceof BigDecimal && value instanceof BigDecimal) {

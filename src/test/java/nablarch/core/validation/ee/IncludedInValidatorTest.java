@@ -29,7 +29,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がString以外の場合にEnum要素名と比較する場合は検証失敗する() {
+    public void 入力値がString以外の場合に列挙型定数名と比較する場合は検証失敗する() {
         EnumBean bean = new EnumBean();
         bean.invalidEnumName = 1;
 
@@ -42,7 +42,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素名のいずれかに大文字小文字の区別なく一致する場合は検証成功する() {
+    public void 入力値が列挙型定数名のいずれかに大文字小文字の区別なく一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
         bean.enumNameString = "ON";
 
@@ -52,7 +52,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素名のいずれにも一致しない場合は検証失敗する() {
+    public void 入力値が列挙型定数名のいずれにも一致しない場合は検証失敗する() {
         EnumBean bean = new EnumBean();
         bean.enumNameString = "HOGE";
 
@@ -67,9 +67,9 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
 
 
     @Test
-    public void 入力値がEnum要素名のいずれかに大文字小文字区別して一致する場合は検証成功する() {
+    public void caseInsensitiveがfalseの時_入力値が列挙型定数名のいずれかに大文字小文字区別して一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
-        bean.enumNameCaseSensitiveName = "ON";
+        bean.enumNameCaseSensitiveString = "ON";
 
         Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
 
@@ -77,21 +77,35 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素名のいずれかに大文字小文字区別して一致しない場合は検証失敗する() {
+    public void caseInsensitiveがfalseの時_入力値が列挙型定数名のいずれにも大文字小文字区別して一致しない場合は検証失敗する() {
         EnumBean bean = new EnumBean();
-        bean.enumNameCaseSensitiveName = "On";
+        bean.enumNameCaseSensitiveString = "On";
 
         Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
 
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<EnumBean> v = violations.iterator().next();
-        Assert.assertEquals("enumNameCaseSensitiveName", v.getPropertyPath().toString());
+        Assert.assertEquals("enumNameCaseSensitiveString", v.getPropertyPath().toString());
         Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$DirectEnumのいずれの要素とも一致しません。", v.getMessage());
     }
 
     @Test
-    public void 入力値がEnum要素のString型フィールドのいずれかに一致する場合は検証成功する() {
+    public void messageが指定された場合検証失敗メッセージが指定されたメッセージとなる() {
+        EnumBean bean = new EnumBean();
+        bean.enumNameStringWithMessage = "hoge";
+
+        Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
+
+        Assert.assertEquals(1, violations.size());
+
+        ConstraintViolation<EnumBean> v = violations.iterator().next();
+        Assert.assertEquals("enumNameStringWithMessage", v.getPropertyPath().toString());
+        Assert.assertEquals("てすとめっせーじ", v.getMessage());
+    }
+
+    @Test
+    public void 入力値が列挙型定数のString型フィールド値のいずれかに一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
         bean.enumValueString = "1";
 
@@ -101,7 +115,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素のString型フィールドのいずれにも一致しない場合は検証失敗する() {
+    public void 入力値が列挙型定数のString型フィールド値のいずれにも一致しない場合は検証失敗する() {
         EnumBean bean = new EnumBean();
         bean.enumValueString = "HOGE";
 
@@ -115,7 +129,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素のBigDecimal型フィールドのいずれかに一致する場合は検証成功する() {
+    public void 入力値が列挙型定数のBigDecimal型フィールド値のいずれかに一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
         bean.enumValueBigDecimal = new BigDecimal("1");
 
@@ -125,7 +139,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素のBigDecimal型フィールドのいずれにも一致しない場合は検証失敗する() {
+    public void 入力値が列挙型定数のBigDecimal型フィールド値のいずれにも一致しない場合は検証失敗する() {
         EnumBean bean = new EnumBean();
         bean.enumValueBigDecimal = new BigDecimal("2");
 
@@ -139,7 +153,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素のNumber型フィールドのいずれかに一致する場合は検証成功する() {
+    public void 入力値が列挙型定数のNumber型フィールド値のいずれかに一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
         bean.enumValueNumber = 1;
 
@@ -149,7 +163,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値がEnum要素のNumber型フィールドのいずれにも一致しない場合は検証失敗する() {
+    public void 入力値が列挙型定数のNumber型フィールド値のいずれにも一致しない場合は検証失敗する() {
         EnumBean bean = new EnumBean();
         bean.enumValueNumber = 2;
 
@@ -162,12 +176,27 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$EnValueNumberEnumのいずれの要素とも一致しません。", v.getMessage());
     }
 
+    @Test
+    public void testListAndGroups() {
+        ListAndGroupsBean bean = new ListAndGroupsBean();
+        bean.listEnumNameString = "oN";
+
+        Set<ConstraintViolation<ListAndGroupsBean>> violations1 = validator.validate(bean, Test1.class);
+        Assert.assertTrue(violations1.isEmpty());
+
+        Set<ConstraintViolation<ListAndGroupsBean>> violations2 = validator.validate(bean, Test2.class);
+        Assert.assertEquals(1, violations2.size());
+        ConstraintViolation<ListAndGroupsBean> v = violations2.iterator().next();
+        Assert.assertEquals("listEnumNameString", v.getPropertyPath().toString());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$DirectEnumのいずれの要素とも一致しません。", v.getMessage());
+    }
+
     private enum DirectEnum {
         ON,
         OFF
     }
 
-    private enum EnValueStringEnum implements EnValue {
+    private enum EnValueStringEnum implements EnValue<String> {
         ON("1"),
         OFF("0");
 
@@ -183,7 +212,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         }
     }
 
-    private enum EnValueBigDecimalEnum implements EnValue {
+    private enum EnValueBigDecimalEnum implements EnValue<BigDecimal> {
         ON(new BigDecimal("1")),
         OFF(new BigDecimal("0"));
 
@@ -200,7 +229,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
 
-    private enum EnValueNumberEnum implements EnValue {
+    private enum EnValueNumberEnum implements EnValue<Number> {
         ON(1),
         OFF(0);
 
@@ -216,13 +245,22 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         }
     }
 
+    private interface Test1 {
+    }
+
+    private interface Test2 {
+    }
+
     private static class EnumBean {
 
         @IncludedIn(DirectEnum.class)
         String enumNameString;
 
         @IncludedIn(value = DirectEnum.class, caseInsensitive = false)
-        String enumNameCaseSensitiveName;
+        String enumNameCaseSensitiveString;
+
+        @IncludedIn(value = DirectEnum.class, message = "てすとめっせーじ")
+        String enumNameStringWithMessage;
 
         @IncludedIn(EnValueStringEnum.class)
         String enumValueString;
@@ -236,4 +274,13 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         @IncludedIn(DirectEnum.class)
         Integer invalidEnumName;
     }
+
+    private static class ListAndGroupsBean {
+        @IncludedIn.List({
+            @IncludedIn(value = DirectEnum.class, groups = {Test1.class}),
+            @IncludedIn(value = DirectEnum.class, caseInsensitive = false, groups = {Test2.class})
+        })
+        private String listEnumNameString;
+    }
+
 }
