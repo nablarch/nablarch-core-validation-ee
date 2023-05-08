@@ -27,20 +27,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 比較ロジックは以下の通りとなる。
  * <ol>
  *     <li>
- *         列挙型が{@link EnValue}を実装していない場合、入力値と列挙型定数の名前（{@link Enum#name()}で取得した値）を比較する。
+ *         列挙型が{@link WithValue}を実装していない場合、入力値と列挙型定数の名前（{@link Enum#name()}で取得した値）を比較する。
  *         入力値は{@code String}に制限される（それ以外の場合、実行時エラーが発生する）。
  *         デフォルトでは、比較時に入力値及び列挙型定数の大文字小文字は区別しない。
  *         区別する場合は{@link #caseInsensitive()}を{@code false}に設定する（デフォルト:{@code true}）。
  *     </li>
  *     <li>
- *         列挙型が{@link EnValue}を実装している場合、入力値と{@link EnValue#getValue()}が返却する値を比較する。
+ *         列挙型が{@link WithValue}を実装している場合、入力値と{@link WithValue#getValue()}が返却する値を比較する。
  *         入力値は{@code String}もしくは{@code Number}に制限される（それ以外の場合、実行時エラーが発生する）。
- *         この場合、{@link #caseInsensitive()}を指定しても効果は無い（{@link EnValue#getValue()}で自由に制御できるため）。
+ *         この場合、{@link #caseInsensitive()}を指定しても効果は無い（{@link WithValue#getValue()}で自由に制御できるため）。
  *     </li>
  * </ol>
  * <p>
  * <p/>
- * {@link EnValue#getValue()}を実装した列挙型を使用する場合の例を以下に示す。
+ * {@link WithValue#getValue()}を実装した列挙型を使用する場合の例を以下に示す。
  * <pre>
  * public class SampleBean {
  *     {@code @IncludedIn(SampleEnum.class})
@@ -66,7 +66,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <ol>
  *     <li>{@link #message()}が指定されている場合は、その値を使用する。</li>
  *     <li>{@link #message()}が未指定で入力値に一致する列挙型定数が存在しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.noElement.message}</b></li>
- *     <li>{@link #message()}が未指定で入力値と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.typeMismatch.message}</b></li>
+ *     <li>{@link #message()}が未指定で入力値の型と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.typeMismatch.message}</b></li>
  * </ol>
  *
  * @author Takayuki UCHIDA
@@ -111,6 +111,10 @@ public @interface IncludedIn {
         IncludedIn[] value();
     }
 
+    interface WithValue<T> {
+        T getValue();
+    }
+
     class IncludedInValidator implements ConstraintValidator<IncludedIn, Object> {
 
         private static final String NO_ELEMENT_MESSAGE = "{nablarch.core.validation.ee.IncludedIn.noElement.message}";
@@ -140,8 +144,8 @@ public @interface IncludedIn {
             }
 
             for (Enum<?> e : this.enums) {
-                if (e instanceof EnValue) {
-                    Object enValue = ((EnValue<?>) e).getValue();
+                if (e instanceof WithValue) {
+                    Object enValue = ((WithValue<?>) e).getValue();
                     // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
                     if (enValue instanceof String && value instanceof String ||
                         enValue instanceof BigDecimal && value instanceof BigDecimal) {
@@ -179,7 +183,8 @@ public @interface IncludedIn {
 
         /**
          * エラー時のメッセージを構築する
-         * @param context 制約バリデーションのコンテキスト（{@link ConstraintValidatorContext}）
+         *
+         * @param context        制約バリデーションのコンテキスト（{@link ConstraintValidatorContext}）
          * @param defaultMessage デフォルトメッセージ
          */
         private void buildMessage(final ConstraintValidatorContext context, final String defaultMessage) {

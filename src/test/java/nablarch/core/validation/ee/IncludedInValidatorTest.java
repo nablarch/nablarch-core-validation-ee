@@ -177,7 +177,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void testListAndGroups() {
+    public void リストとグループが正しく動作する() {
         ListAndGroupsBean bean = new ListAndGroupsBean();
         bean.listEnumNameString = "oN";
 
@@ -196,13 +196,13 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         OFF
     }
 
-    private enum EnValueStringEnum implements EnValue<String> {
+    private enum WithValueStringEnum implements IncludedIn.WithValue<String> {
         ON("1"),
         OFF("0");
 
         private final String value;
 
-        EnValueStringEnum(String value) {
+        WithValueStringEnum(String value) {
             this.value = value;
         }
 
@@ -212,13 +212,13 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         }
     }
 
-    private enum EnValueBigDecimalEnum implements EnValue<BigDecimal> {
+    private enum WithValueBigDecimalEnum implements IncludedIn.WithValue<BigDecimal> {
         ON(new BigDecimal("1")),
         OFF(new BigDecimal("0"));
 
         private final BigDecimal value;
 
-        EnValueBigDecimalEnum(BigDecimal value) {
+        WithValueBigDecimalEnum(BigDecimal value) {
             this.value = value;
         }
 
@@ -229,13 +229,13 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
     }
 
 
-    private enum EnValueNumberEnum implements EnValue<Number> {
+    private enum WithValueNumberEnum implements IncludedIn.WithValue<Number> {
         ON(1),
         OFF(0);
 
         private final Number value;
 
-        EnValueNumberEnum(Number value) {
+        WithValueNumberEnum(Number value) {
             this.value = value;
         }
 
@@ -262,13 +262,13 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
         @IncludedIn(value = DirectEnum.class, message = "てすとめっせーじ")
         String enumNameStringWithMessage;
 
-        @IncludedIn(EnValueStringEnum.class)
+        @IncludedIn(WithValueStringEnum.class)
         String enumValueString;
 
-        @IncludedIn(EnValueBigDecimalEnum.class)
+        @IncludedIn(WithValueBigDecimalEnum.class)
         BigDecimal enumValueBigDecimal;
 
-        @IncludedIn(EnValueNumberEnum.class)
+        @IncludedIn(WithValueNumberEnum.class)
         Number enumValueNumber;
 
         @IncludedIn(DirectEnum.class)
