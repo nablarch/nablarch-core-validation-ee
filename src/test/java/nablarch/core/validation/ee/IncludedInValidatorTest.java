@@ -125,7 +125,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
 
         ConstraintViolation<EnumBean> v = violations.iterator().next();
         Assert.assertEquals("enumValueString", v.getPropertyPath().toString());
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$EnValueStringEnumのいずれの要素とも一致しません。", v.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$WithValueStringEnumのいずれの要素とも一致しません。", v.getMessage());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
 
         ConstraintViolation<EnumBean> v = violations.iterator().next();
         Assert.assertEquals("enumValueBigDecimal", v.getPropertyPath().toString());
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$EnValueBigDecimalEnumのいずれの要素とも一致しません。", v.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$WithValueBigDecimalEnumのいずれの要素とも一致しません。", v.getMessage());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class IncludedInValidatorTest extends BeanValidationTestCase {
 
         ConstraintViolation<EnumBean> v = violations.iterator().next();
         Assert.assertEquals("enumValueNumber", v.getPropertyPath().toString());
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$EnValueNumberEnumのいずれの要素とも一致しません。", v.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.IncludedInValidatorTest$WithValueNumberEnumのいずれの要素とも一致しません。", v.getMessage());
     }
 
     @Test
