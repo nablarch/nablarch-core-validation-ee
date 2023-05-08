@@ -61,14 +61,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *         return value;
  *     }
  * }
- *
- *
  * </pre>
  * エラー時のメッセージは、以下のルールにより決定される。
  * <ol>
  *     <li>{@link #message()}が指定されている場合は、その値を使用する。</li>
- *     <li>{@link #message()}が未指定で{@link #integer()}のみ指定の場合は、<b>{nablarch.core.validation.ee.Digits.integer.message}</b></li>
- *     <li>{@link #message()}が未指定で{@link #integer()}と{@link #fraction()}を指定の場合は、<b>{nablarch.core.validation.ee.Digits.message}</b></li>
+ *     <li>{@link #message()}が未指定で入力値に一致する列挙型定数が存在しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.noElement.message}</b></li>
+ *     <li>{@link #message()}が未指定で入力値と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.typeMismatch.message}</b></li>
  * </ol>
  *
  * @author Takayuki UCHIDA
@@ -98,6 +96,9 @@ public @interface IncludedIn {
 
     Class<? extends Enum<?>> value();
 
+    /**
+     * 大文字小文字を区別するか否か（{@code true}: 区別しない）
+     */
     boolean caseInsensitive() default true;
 
     /**
@@ -118,6 +119,9 @@ public @interface IncludedIn {
         private boolean caseInsensitive;
         private String message;
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void initialize(IncludedIn constraintAnnotation) {
             this.enums = constraintAnnotation.value().getEnumConstants();
@@ -125,6 +129,9 @@ public @interface IncludedIn {
             this.message = constraintAnnotation.message();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean isValid(Object value, ConstraintValidatorContext context) {
 
@@ -135,7 +142,7 @@ public @interface IncludedIn {
             for (Enum<?> e : this.enums) {
                 if (e instanceof EnValue) {
                     Object enValue = ((EnValue) e).getValue();
-                    // Enum要素のフィールド値と比較するときは、検証対象フィールドの型はString/BigDecimal/Numberのみ許可する。
+                    // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
                     if (enValue instanceof String && value instanceof String ||
                         enValue instanceof BigDecimal && value instanceof BigDecimal) {
                         if (value.equals(enValue)) {
@@ -170,6 +177,11 @@ public @interface IncludedIn {
             return false;
         }
 
+        /**
+         * エラー時のメッセージを構築する
+         * @param context 制約バリデーションのコンテキスト（{@link ConstraintValidatorContext}）
+         * @param defaultMessage デフォルトメッセージ
+         */
         private void buildMessage(final ConstraintValidatorContext context, final String defaultMessage) {
             if (StringUtil.isNullOrEmpty(message)) {
                 context.disableDefaultConstraintViolation();
@@ -177,7 +189,5 @@ public @interface IncludedIn {
                     .addConstraintViolation();
             }
         }
-
-
     }
 }
