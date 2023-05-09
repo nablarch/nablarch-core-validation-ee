@@ -87,7 +87,7 @@ public @interface EnumElement {
     /**
      * メッセージ
      */
-    String message() default "";
+    String message() default "{nablarch.core.validation.ee.EnumElement.noElement.message}";
 
     /**
      * payload
@@ -117,11 +117,8 @@ public @interface EnumElement {
 
     class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
 
-        private static final String NO_ELEMENT_MESSAGE = "{nablarch.core.validation.ee.EnumElement.noElement.message}";
-        private static final String TYPE_MISMATCH_MESSAGE = "{nablarch.core.validation.ee.EnumElement.typeMismatch.message}";
         private Enum<?>[] enums;
         private boolean caseInsensitive;
-        private String message;
 
         /**
          * {@inheritDoc}
@@ -130,7 +127,6 @@ public @interface EnumElement {
         public void initialize(EnumElement constraintAnnotation) {
             this.enums = constraintAnnotation.value().getEnumConstants();
             this.caseInsensitive = constraintAnnotation.caseInsensitive();
-            this.message = constraintAnnotation.message();
         }
 
         /**
@@ -159,7 +155,6 @@ public @interface EnumElement {
                         }
                     } else {
                         // 型が一致しないときは、検証エラーとする。
-                        buildMessage(context, TYPE_MISMATCH_MESSAGE);
                         return false;
                     }
                 } else {
@@ -170,28 +165,12 @@ public @interface EnumElement {
                         }
                     } else {
                         // 型が一致しないときは、検証エラーとする。
-                        buildMessage(context, TYPE_MISMATCH_MESSAGE);
                         return false;
                     }
                 }
             }
 
-            buildMessage(context, NO_ELEMENT_MESSAGE);
             return false;
-        }
-
-        /**
-         * エラー時のメッセージを構築する
-         *
-         * @param context        制約バリデーションのコンテキスト（{@link ConstraintValidatorContext}）
-         * @param defaultMessage デフォルトメッセージ
-         */
-        private void buildMessage(final ConstraintValidatorContext context, final String defaultMessage) {
-            if (StringUtil.isNullOrEmpty(message)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(defaultMessage)
-                    .addConstraintViolation();
-            }
         }
     }
 }

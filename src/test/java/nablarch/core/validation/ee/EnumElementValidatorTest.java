@@ -38,7 +38,7 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<EnumBean> v1 = violations.iterator().next();
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$DirectEnumの定数のフィールド型と入力値の型が一致しません。", v1.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$DirectEnumのいずれの要素とも一致しません。", v1.getMessage());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<EnumBean> v1 = violations.iterator().next();
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$WithValueNumberEnumの定数のフィールド型と入力値の型が一致しません。", v1.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$WithValueNumberEnumのいずれの要素とも一致しません。", v1.getMessage());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<EnumBean> v1 = violations.iterator().next();
-        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$WithValueStringEnumの定数のフィールド型と入力値の型が一致しません。", v1.getMessage());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$WithValueStringEnumのいずれの要素とも一致しません。", v1.getMessage());
     }
 
     @Test
