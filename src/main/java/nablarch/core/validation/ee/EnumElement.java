@@ -62,13 +62,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     }
  * }
  * </pre>
- * エラー時のメッセージは、以下のルールにより決定される。
- * <ol>
- *     <li>{@link #message()}が指定されている場合は、その値を使用する。</li>
- *     <li>{@link #message()}が未指定で入力値に一致する列挙型定数が存在しない場合は、<b>{nablarch.core.validation.ee.EnumElement.noElement.message}</b></li>
- *     <li>{@link #message()}が未指定で入力値の型と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.EnumElement.typeMismatch.message}</b></li>
- * </ol>
- *
  * @author Takayuki UCHIDA
  */
 
@@ -87,7 +80,7 @@ public @interface EnumElement {
     /**
      * メッセージ
      */
-    String message() default "{nablarch.core.validation.ee.EnumElement.noElement.message}";
+    String message() default "{nablarch.core.validation.ee.EnumElement.message}";
 
     /**
      * payload
