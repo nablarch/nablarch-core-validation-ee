@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     <li>
  *         列挙型が{@link WithValue}を実装している場合、入力値と{@link WithValue#getValue()}が返却する値を比較する。
  *         入力値は{@code String}もしくは{@code Number}に制限される（それ以外の場合、実行時エラーが発生する）。
- *         この場合、{@link #caseInsensitive()}を指定しても効果は無い（{@link WithValue#getValue()}で自由に制御できるため）。
+ *         この場合、{@link #caseInsensitive()}を指定しても無視される。
  *     </li>
  * </ol>
  * <p>
@@ -43,11 +43,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * {@link WithValue#getValue()}を実装した列挙型を使用する場合の例を以下に示す。
  * <pre>
  * public class SampleBean {
- *     {@code @IncludedIn(SampleEnum.class})
+ *     {@code @EnumElement(SampleEnum.class})
  *     String sampleString;
  * }
  *
- * public enum SampleEnum implements EnValue{@code <String>} {
+ * public enum SampleEnum implements EnumElement.WithValue{@code <String>} {
  *     ON("1"), OFF("0");
  *
  *     private final String value;
@@ -65,8 +65,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * エラー時のメッセージは、以下のルールにより決定される。
  * <ol>
  *     <li>{@link #message()}が指定されている場合は、その値を使用する。</li>
- *     <li>{@link #message()}が未指定で入力値に一致する列挙型定数が存在しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.noElement.message}</b></li>
- *     <li>{@link #message()}が未指定で入力値の型と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.IncludedIn.typeMismatch.message}</b></li>
+ *     <li>{@link #message()}が未指定で入力値に一致する列挙型定数が存在しない場合は、<b>{nablarch.core.validation.ee.EnumElement.noElement.message}</b></li>
+ *     <li>{@link #message()}が未指定で入力値の型と列挙型定数フィールドの型が一致しない場合は、<b>{nablarch.core.validation.ee.EnumElement.typeMismatch.message}</b></li>
  * </ol>
  *
  * @author Takayuki UCHIDA
@@ -75,9 +75,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {IncludedIn.IncludedInValidator.class})
+@Constraint(validatedBy = {EnumElement.EnumElementValidator.class})
 @Published
-public @interface IncludedIn {
+public @interface EnumElement {
 
     /**
      * グループ
@@ -108,17 +108,17 @@ public @interface IncludedIn {
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        IncludedIn[] value();
+        EnumElement[] value();
     }
 
     interface WithValue<T> {
         T getValue();
     }
 
-    class IncludedInValidator implements ConstraintValidator<IncludedIn, Object> {
+    class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
 
-        private static final String NO_ELEMENT_MESSAGE = "{nablarch.core.validation.ee.IncludedIn.noElement.message}";
-        private static final String TYPE_MISMATCH_MESSAGE = "{nablarch.core.validation.ee.IncludedIn.typeMismatch.message}";
+        private static final String NO_ELEMENT_MESSAGE = "{nablarch.core.validation.ee.EnumElement.noElement.message}";
+        private static final String TYPE_MISMATCH_MESSAGE = "{nablarch.core.validation.ee.EnumElement.typeMismatch.message}";
         private Enum<?>[] enums;
         private boolean caseInsensitive;
         private String message;
@@ -127,7 +127,7 @@ public @interface IncludedIn {
          * {@inheritDoc}
          */
         @Override
-        public void initialize(IncludedIn constraintAnnotation) {
+        public void initialize(EnumElement constraintAnnotation) {
             this.enums = constraintAnnotation.value().getEnumConstants();
             this.caseInsensitive = constraintAnnotation.caseInsensitive();
             this.message = constraintAnnotation.message();
@@ -139,7 +139,7 @@ public @interface IncludedIn {
         @Override
         public boolean isValid(Object value, ConstraintValidatorContext context) {
 
-            if (value == null || value instanceof String && StringUtil.isNullOrEmpty((String) value)) {
+            if (value == null || (value instanceof String && StringUtil.isNullOrEmpty((String) value))) {
                 return true;
             }
 
@@ -147,8 +147,7 @@ public @interface IncludedIn {
                 if (e instanceof WithValue) {
                     Object enValue = ((WithValue<?>) e).getValue();
                     // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
-                    if (enValue instanceof String && value instanceof String ||
-                        enValue instanceof BigDecimal && value instanceof BigDecimal) {
+                    if (enValue instanceof String && value instanceof String) {
                         if (value.equals(enValue)) {
                             return true;
                         }
@@ -166,7 +165,7 @@ public @interface IncludedIn {
                 } else {
                     if (value instanceof String) {
                         // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
-                        if (caseInsensitive && value.toString().equalsIgnoreCase(e.name()) || value.toString().equals(e.name())) {
+                        if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
                             return true;
                         }
                     } else {
