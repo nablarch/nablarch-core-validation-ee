@@ -62,6 +62,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     }
  * }
  * </pre>
+ *
  * @author Takayuki UCHIDA
  */
 
@@ -108,63 +109,6 @@ public @interface EnumElement {
         T getValue();
     }
 
-    interface Validator {
-        boolean isValid(Object value);
-    }
-
-    class WithValueValidator implements Validator {
-
-        private final Enum<?>[] enums;
-
-        public WithValueValidator(Enum<?>[] enums) {
-            this.enums = enums;
-        }
-
-        @Override
-        public boolean isValid(Object value) {
-            for (Enum<?> e : enums) {
-                Object enValue = ((WithValue<?>) e).getValue();
-                // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
-                if (enValue instanceof String && value instanceof String) {
-                    if (value.equals(enValue)) {
-                        return true;
-                    }
-                } else if (enValue instanceof Number && value instanceof Number) {
-                    BigDecimal v1 = new BigDecimal(enValue.toString());
-                    BigDecimal v2 = new BigDecimal(value.toString());
-                    if (v2.equals(v1)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
-    class ConstantValidator implements Validator {
-
-        private final Enum<?>[] enums;
-        private final boolean caseInsensitive;
-
-        ConstantValidator(Enum<?>[] enums, boolean caseInsensitive) {
-            this.enums = enums;
-            this.caseInsensitive = caseInsensitive;
-        }
-
-        @Override
-        public boolean isValid(Object value) {
-            for (Enum<?> e : enums) {
-                if (value instanceof String) {
-                    // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
-                    if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
 
     class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
 
@@ -195,5 +139,64 @@ public @interface EnumElement {
             return validator.isValid(value);
         }
 
+        private interface Validator {
+            boolean isValid(Object value);
+        }
+
+        /**
+         * {@link WithValue}を実装したEnumで比較する
+         */
+        private static class WithValueValidator implements Validator {
+
+            private final Enum<?>[] enums;
+
+            public WithValueValidator(Enum<?>[] enums) {
+                this.enums = enums;
+            }
+
+            @Override
+            public boolean isValid(Object value) {
+                for (Enum<?> e : enums) {
+                    Object enValue = ((WithValue<?>) e).getValue();
+                    // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
+                    if (enValue instanceof String && value instanceof String) {
+                        if (value.equals(enValue)) {
+                            return true;
+                        }
+                    } else if (enValue instanceof Number && value instanceof Number) {
+                        BigDecimal v1 = new BigDecimal(enValue.toString());
+                        BigDecimal v2 = new BigDecimal(value.toString());
+                        if (v2.equals(v1)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
+        private static class ConstantValidator implements Validator {
+
+            private final Enum<?>[] enums;
+            private final boolean caseInsensitive;
+
+            ConstantValidator(Enum<?>[] enums, boolean caseInsensitive) {
+                this.enums = enums;
+                this.caseInsensitive = caseInsensitive;
+            }
+
+            @Override
+            public boolean isValid(Object value) {
+                for (Enum<?> e : enums) {
+                    if (value instanceof String) {
+                        // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
+                        if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }
     }
 }
