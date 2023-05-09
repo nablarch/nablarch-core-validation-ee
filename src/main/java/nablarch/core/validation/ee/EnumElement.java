@@ -153,9 +153,6 @@ public @interface EnumElement {
                         if (v2.equals(v1)) {
                             return true;
                         }
-                    } else {
-                        // 型が一致しないときは、検証エラーとする。
-                        return false;
                     }
                 } else {
                     if (value instanceof String) {
@@ -163,9 +160,6 @@ public @interface EnumElement {
                         if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
                             return true;
                         }
-                    } else {
-                        // 型が一致しないときは、検証エラーとする。
-                        return false;
                     }
                 }
             }
