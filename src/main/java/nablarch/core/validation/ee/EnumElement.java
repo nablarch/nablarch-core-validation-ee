@@ -119,6 +119,7 @@ public @interface EnumElement {
 
         private Enum<?>[] enums;
         private boolean caseInsensitive;
+        private boolean isWithValue;
 
         /**
          * {@inheritDoc}
@@ -127,6 +128,7 @@ public @interface EnumElement {
         public void initialize(EnumElement constraintAnnotation) {
             this.enums = constraintAnnotation.value().getEnumConstants();
             this.caseInsensitive = constraintAnnotation.caseInsensitive();
+            this.isWithValue = WithValue.class.isAssignableFrom(constraintAnnotation.value());
         }
 
         /**
@@ -139,31 +141,41 @@ public @interface EnumElement {
                 return true;
             }
 
+            if (isWithValue) {
+                return isValidWithValue(value);
+            }
+
+            return isValidConstant(value);
+        }
+
+        private boolean isValidWithValue(Object value) {
             for (Enum<?> e : this.enums) {
-                if (e instanceof WithValue) {
-                    Object enValue = ((WithValue<?>) e).getValue();
-                    // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
-                    if (enValue instanceof String && value instanceof String) {
-                        if (value.equals(enValue)) {
-                            return true;
-                        }
-                    } else if (enValue instanceof Number && value instanceof Number) {
-                        BigDecimal v1 = new BigDecimal(enValue.toString());
-                        BigDecimal v2 = new BigDecimal(value.toString());
-                        if (v2.equals(v1)) {
-                            return true;
-                        }
+                Object enValue = ((WithValue<?>) e).getValue();
+                // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
+                if (enValue instanceof String && value instanceof String) {
+                    if (value.equals(enValue)) {
+                        return true;
                     }
-                } else {
-                    if (value instanceof String) {
-                        // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
-                        if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
-                            return true;
-                        }
+                } else if (enValue instanceof Number && value instanceof Number) {
+                    BigDecimal v1 = new BigDecimal(enValue.toString());
+                    BigDecimal v2 = new BigDecimal(value.toString());
+                    if (v2.equals(v1)) {
+                        return true;
                     }
                 }
             }
+            return false;
+        }
 
+        private boolean isValidConstant(Object value) {
+            for (Enum<?> e : this.enums) {
+                if (value instanceof String) {
+                    // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
+                    if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
     }
