@@ -115,41 +115,21 @@ public @interface EnumElement {
         T getValue();
     }
 
-    class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
+    interface Validator {
+        boolean isValid(Object value);
+    }
 
-        private Enum<?>[] enums;
-        private boolean caseInsensitive;
-        private boolean isWithValue;
+    class WithValueValidator implements Validator {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void initialize(EnumElement constraintAnnotation) {
-            this.enums = constraintAnnotation.value().getEnumConstants();
-            this.caseInsensitive = constraintAnnotation.caseInsensitive();
-            this.isWithValue = WithValue.class.isAssignableFrom(constraintAnnotation.value());
+        private final Enum<?>[] enums;
+
+        public WithValueValidator(Enum<?>[] enums) {
+            this.enums = enums;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
-        public boolean isValid(Object value, ConstraintValidatorContext context) {
-
-            if (value == null || (value instanceof String && StringUtil.isNullOrEmpty((String) value))) {
-                return true;
-            }
-
-            if (isWithValue) {
-                return isValidWithValue(value);
-            }
-
-            return isValidConstant(value);
-        }
-
-        private boolean isValidWithValue(Object value) {
-            for (Enum<?> e : this.enums) {
+        public boolean isValid(Object value) {
+            for (Enum<?> e : enums) {
                 Object enValue = ((WithValue<?>) e).getValue();
                 // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
                 if (enValue instanceof String && value instanceof String) {
@@ -166,9 +146,21 @@ public @interface EnumElement {
             }
             return false;
         }
+    }
 
-        private boolean isValidConstant(Object value) {
-            for (Enum<?> e : this.enums) {
+    class ConstantValidator implements Validator {
+
+        private final Enum<?>[] enums;
+        private final boolean caseInsensitive;
+
+        ConstantValidator(Enum<?>[] enums, boolean caseInsensitive) {
+            this.enums = enums;
+            this.caseInsensitive = caseInsensitive;
+        }
+
+        @Override
+        public boolean isValid(Object value) {
+            for (Enum<?> e : enums) {
                 if (value instanceof String) {
                     // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
                     if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
@@ -178,5 +170,37 @@ public @interface EnumElement {
             }
             return false;
         }
+    }
+
+
+    class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
+
+        private Validator validator;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void initialize(EnumElement constraintAnnotation) {
+            if (WithValue.class.isAssignableFrom(constraintAnnotation.value())) {
+                validator = new WithValueValidator(constraintAnnotation.value().getEnumConstants());
+            } else {
+                validator = new ConstantValidator(constraintAnnotation.value().getEnumConstants(), constraintAnnotation.caseInsensitive());
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid(Object value, ConstraintValidatorContext context) {
+
+            if (value == null || (value instanceof String && StringUtil.isNullOrEmpty((String) value))) {
+                return true;
+            }
+
+            return validator.isValid(value);
+        }
+
     }
 }
