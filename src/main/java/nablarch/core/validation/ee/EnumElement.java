@@ -29,12 +29,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *         列挙型が{@link WithValue}を実装していない場合、入力値と列挙型定数の名前（{@link Enum#name()}で取得した値）を比較する。
  *         入力値は{@code String}に制限される（それ以外の場合、実行時エラーが発生する）。
  *         デフォルトでは、比較時に入力値及び列挙型定数の大文字小文字は区別しない。
- *         区別する場合は{@link #caseInsensitive()}を{@code false}に設定する（デフォルト:{@code true}）。
+ *         区別する場合は{@link #caseSensitive()}を{@code false}に設定する（デフォルト:{@code true}）。
  *     </li>
  *     <li>
  *         列挙型が{@link WithValue}を実装している場合、入力値と{@link WithValue#getValue()}が返却する値を比較する。
  *         入力値は{@code String}もしくは{@code Number}に制限される（それ以外の場合、実行時エラーが発生する）。
- *         この場合、{@link #caseInsensitive()}を指定しても無視される。
+ *         この場合、{@link #caseSensitive()}を指定しても無視される。
  *     </li>
  * </ol>
  * <p>
@@ -92,7 +92,7 @@ public @interface EnumElement {
     /**
      * 大文字小文字を区別するか否か（{@code true}: 区別しない）
      */
-    boolean caseInsensitive() default true;
+    boolean caseSensitive() default false;
 
     /**
      * 複数指定用のアノテーション
@@ -121,7 +121,7 @@ public @interface EnumElement {
             if (WithValue.class.isAssignableFrom(constraintAnnotation.value())) {
                 validator = new WithValueValidator((WithValue<?>[]) constraintAnnotation.value().getEnumConstants());
             } else {
-                validator = new ConstantValidator(constraintAnnotation.value().getEnumConstants(), constraintAnnotation.caseInsensitive());
+                validator = new ConstantValidator(constraintAnnotation.value().getEnumConstants(), constraintAnnotation.caseSensitive());
             }
         }
 
@@ -138,6 +138,9 @@ public @interface EnumElement {
             return validator.isValid(value);
         }
 
+        /**
+         * 列挙型定数と入力値を比較するバリデータのインタフェース。
+         */
         private interface Validator {
             boolean isValid(Object value);
         }
@@ -154,9 +157,8 @@ public @interface EnumElement {
                 // enumの要素数が0のときはNullPointerExceptionが発生するが、利用方法を考慮すると要素0個のenumは実装誤りなので問題ない。
                 Object value = enums[0].getValue();
                 if (!(value instanceof String || value instanceof Number)) {
-                    throw new IllegalArgumentException("");
+                    throw new IllegalArgumentException("The return type of EnumElement.WithValue#getValue() is only String or Number.");
                 }
-
                 this.enums = enums;
             }
 
@@ -177,18 +179,18 @@ public @interface EnumElement {
         private static class ConstantValidator implements Validator {
 
             private final Enum<?>[] enums;
-            private final boolean caseInsensitive;
+            private final boolean caseSensitive;
 
-            ConstantValidator(Enum<?>[] enums, boolean caseInsensitive) {
+            ConstantValidator(Enum<?>[] enums, boolean caseSensitive) {
                 this.enums = enums;
-                this.caseInsensitive = caseInsensitive;
+                this.caseSensitive = caseSensitive;
             }
 
             @Override
             public boolean isValid(Object value) {
                 for (Enum<?> e : enums) {
                     // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
-                    if ((caseInsensitive && e.name().equalsIgnoreCase(value.toString())) || e.name().equals(value)) {
+                    if ((!caseSensitive && e.name().equalsIgnoreCase(value.toString())) || e.name().equals(value)) {
                         return true;
                     }
                 }

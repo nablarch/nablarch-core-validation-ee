@@ -1,13 +1,21 @@
 package nablarch.core.validation.ee;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ValidationException;
 import java.math.BigDecimal;
 import java.util.Set;
 
 public class EnumElementValidatorTest extends BeanValidationTestCase {
+
+
+    @Rule
+    public ExpectedException expectedException  = ExpectedException.none();
 
     @Test
     public void 入力値がnullの場合は検証成功する() {
@@ -26,6 +34,19 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
 
         Assert.assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    public void 列挙型定数のフィールド型がStringでもNumberでもない場合例外が発生する(){
+        ErrorBean bean = new ErrorBean();
+        bean.invalidEnumValueObject = "hoge";
+
+        expectedException.expect(ValidationException.class);
+        expectedException.expectCause(Matchers.allOf(
+            Matchers.instanceOf(IllegalArgumentException.class),
+            Matchers.hasProperty("message", Matchers.is("The return type of EnumElement.WithValue#getValue() is only String or Number."))));
+
+        validator.validate(bean);
     }
 
     @Test
@@ -179,6 +200,30 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
     }
 
     @Test
+    public void 入力値が列挙型定数のDouble型フィールド値のいずれかに一致する場合は検証成功する() {
+        EnumBean bean = new EnumBean();
+
+
+        Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
+
+        Assert.assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    public void 入力値が列挙型定数のDouble型フィールド値のいずれにも一致しない場合は検証失敗する() {
+        EnumBean bean = new EnumBean();
+        bean.enumValueDouble = 2.0;
+
+        Set<ConstraintViolation<EnumBean>> violations = validator.validate(bean);
+
+        Assert.assertEquals(1, violations.size());
+
+        ConstraintViolation<EnumBean> v = violations.iterator().next();
+        Assert.assertEquals("enumValueDouble", v.getPropertyPath().toString());
+        Assert.assertEquals("指定した列挙型class nablarch.core.validation.ee.EnumElementValidatorTest$WithValueDoubleEnumのいずれの要素とも一致しません。", v.getMessage());
+    }
+
+    @Test
     public void 入力値が列挙型定数のNumber型フィールド値のいずれかに一致する場合は検証成功する() {
         EnumBean bean = new EnumBean();
         bean.enumValueNumber = 1;
@@ -238,6 +283,22 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         }
     }
 
+    private enum WithValueDoubleEnum implements EnumElement.WithValue<Double> {
+        ON(1.0),
+        OFF(0.0);
+
+        private final Double value;
+
+        WithValueDoubleEnum(Double value) {
+            this.value = value;
+        }
+
+        @Override
+        public Double getValue() {
+            return value;
+        }
+    }
+
     private enum WithValueBigDecimalEnum implements EnumElement.WithValue<BigDecimal> {
         ON(new BigDecimal("1")),
         OFF(new BigDecimal("0"));
@@ -271,6 +332,22 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         }
     }
 
+    private enum WithValueObjectEnum implements EnumElement.WithValue<Object> {
+        ON(new Object()),
+        OFF(new Object());
+
+        private final Object value;
+
+        WithValueObjectEnum(Object value) {
+            this.value = value;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
+        }
+    }
+
     private interface Test1 {
     }
 
@@ -282,7 +359,7 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         @EnumElement(DirectEnum.class)
         String enumNameString;
 
-        @EnumElement(value = DirectEnum.class, caseInsensitive = false)
+        @EnumElement(value = DirectEnum.class, caseSensitive = true)
         String enumNameCaseSensitiveString;
 
         @EnumElement(value = DirectEnum.class, message = "てすとめっせーじ")
@@ -293,6 +370,9 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
 
         @EnumElement(WithValueBigDecimalEnum.class)
         BigDecimal enumValueBigDecimal;
+
+        @EnumElement(WithValueDoubleEnum.class)
+        Double enumValueDouble;
 
         @EnumElement(WithValueNumberEnum.class)
         Number enumValueNumber;
@@ -307,10 +387,15 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         Integer invalidEnumValueInteger;
     }
 
+    private static class ErrorBean {
+        @EnumElement(WithValueObjectEnum.class)
+        Object invalidEnumValueObject;
+    }
+
     private static class ListAndGroupsBean {
         @EnumElement.List({
             @EnumElement(value = DirectEnum.class, groups = {Test1.class}),
-            @EnumElement(value = DirectEnum.class, caseInsensitive = false, groups = {Test2.class})
+            @EnumElement(value = DirectEnum.class, caseSensitive = true, groups = {Test2.class})
         })
         private String listEnumNameString;
     }
