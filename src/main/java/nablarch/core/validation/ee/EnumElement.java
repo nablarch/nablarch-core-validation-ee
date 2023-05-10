@@ -29,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *         列挙型が{@link WithValue}を実装していない場合、入力値と列挙型定数の名前（{@link Enum#name()}で取得した値）を比較する。
  *         入力値は{@code String}に制限される（それ以外の場合、実行時エラーが発生する）。
  *         デフォルトでは、比較時に入力値及び列挙型定数の大文字小文字は区別しない。
- *         区別する場合は{@link #caseSensitive()}を{@code false}に設定する（デフォルト:{@code true}）。
+ *         区別する場合は{@link #caseSensitive()}を{@code true}に設定する（デフォルト:{@code false}）。
  *     </li>
  *     <li>
  *         列挙型が{@link WithValue}を実装している場合、入力値と{@link WithValue#getValue()}が返却する値を比較する。
@@ -118,10 +118,13 @@ public @interface EnumElement {
          */
         @Override
         public void initialize(EnumElement constraintAnnotation) {
-            if (WithValue.class.isAssignableFrom(constraintAnnotation.value())) {
-                validator = new WithValueValidator((WithValue<?>[]) constraintAnnotation.value().getEnumConstants());
+
+            Class<? extends Enum<?>> enumClass = constraintAnnotation.value();
+
+            if (WithValue.class.isAssignableFrom(enumClass)) {
+                validator = new WithValueValidator((WithValue<?>[]) enumClass.getEnumConstants());
             } else {
-                validator = new ConstantValidator(constraintAnnotation.value().getEnumConstants(), constraintAnnotation.caseSensitive());
+                validator = new ConstantValidator(enumClass.getEnumConstants(), constraintAnnotation.caseSensitive());
             }
         }
 
@@ -157,7 +160,7 @@ public @interface EnumElement {
                 // enumの要素数が0のときはNullPointerExceptionが発生するが、利用方法を考慮すると要素0個のenumは実装誤りなので問題ない。
                 Object value = enums[0].getValue();
                 if (!(value instanceof String || value instanceof Number)) {
-                    throw new IllegalArgumentException("The return type of EnumElement.WithValue#getValue() is only String or Number.");
+                    throw new IllegalArgumentException("The return type of EnumElement.WithValue#getValue() must be String or Number.");
                 }
                 this.enums = enums;
             }

@@ -44,7 +44,7 @@ public class EnumElementValidatorTest extends BeanValidationTestCase {
         expectedException.expect(ValidationException.class);
         expectedException.expectCause(Matchers.allOf(
             Matchers.instanceOf(IllegalArgumentException.class),
-            Matchers.hasProperty("message", Matchers.is("The return type of EnumElement.WithValue#getValue() is only String or Number."))));
+            Matchers.hasProperty("message", Matchers.is("The return type of EnumElement.WithValue#getValue() must be String or Number."))));
 
         validator.validate(bean);
     }
