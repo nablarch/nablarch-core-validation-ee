@@ -10,7 +10,6 @@ import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.math.BigDecimal;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -120,7 +119,7 @@ public @interface EnumElement {
         @Override
         public void initialize(EnumElement constraintAnnotation) {
             if (WithValue.class.isAssignableFrom(constraintAnnotation.value())) {
-                validator = new WithValueValidator(constraintAnnotation.value().getEnumConstants());
+                validator = new WithValueValidator((WithValue<?>[]) constraintAnnotation.value().getEnumConstants());
             } else {
                 validator = new ConstantValidator(constraintAnnotation.value().getEnumConstants(), constraintAnnotation.caseInsensitive());
             }
@@ -144,37 +143,37 @@ public @interface EnumElement {
         }
 
         /**
-         * {@link WithValue}を実装したEnumで比較する
+         * 列挙型要素のフィールドと入力値を比較する場合のバリデータ実装。
          */
         private static class WithValueValidator implements Validator {
 
-            private final Enum<?>[] enums;
+            private final WithValue<?>[] enums;
 
-            public WithValueValidator(Enum<?>[] enums) {
+            public WithValueValidator(WithValue<?>[] enums) {
+
+                // enumの要素数が0のときはNullPointerExceptionが発生するが、利用方法を考慮すると要素0個のenumは実装誤りなので問題ない。
+                Object value = enums[0].getValue();
+                if (!(value instanceof String || value instanceof Number)) {
+                    throw new IllegalArgumentException("");
+                }
+
                 this.enums = enums;
             }
 
             @Override
             public boolean isValid(Object value) {
-                for (Enum<?> e : enums) {
-                    Object enValue = ((WithValue<?>) e).getValue();
-                    // 列挙型定数のフィールド値と入力値を比較するとき、型はString/Numberのみ許可する。
-                    if (enValue instanceof String && value instanceof String) {
-                        if (value.equals(enValue)) {
-                            return true;
-                        }
-                    } else if (enValue instanceof Number && value instanceof Number) {
-                        BigDecimal v1 = new BigDecimal(enValue.toString());
-                        BigDecimal v2 = new BigDecimal(value.toString());
-                        if (v2.equals(v1)) {
-                            return true;
-                        }
+                for (WithValue<?> e : enums) {
+                    if (e.getValue().equals(value)) {
+                        return true;
                     }
                 }
                 return false;
             }
         }
 
+        /**
+         * 列挙型要素の名前と入力値を比較する場合のバリデータ実装。
+         */
         private static class ConstantValidator implements Validator {
 
             private final Enum<?>[] enums;
@@ -188,11 +187,9 @@ public @interface EnumElement {
             @Override
             public boolean isValid(Object value) {
                 for (Enum<?> e : enums) {
-                    if (value instanceof String) {
-                        // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
-                        if ((caseInsensitive && ((String) value).equalsIgnoreCase(e.name())) || value.equals(e.name())) {
-                            return true;
-                        }
+                    // Enum要素名と比較する場合は、検証対象フィールドの型はStringのみ許容する。
+                    if ((caseInsensitive && e.name().equalsIgnoreCase(value.toString())) || e.name().equals(value)) {
+                        return true;
                     }
                 }
                 return false;
