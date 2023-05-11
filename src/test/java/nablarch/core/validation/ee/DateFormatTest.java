@@ -16,8 +16,9 @@ public class DateFormatTest extends BeanValidationTestCase {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ValidatorUtil.clearCachedValidatorFactory();
+        ValidatorUtil.getValidatorFactory().close();
     }
 
     @Test
@@ -41,19 +42,19 @@ public class DateFormatTest extends BeanValidationTestCase {
 
     }
 
-    //    @Test
-//    public void システムリポジトリに設定しているデフォルト書式で検証できる() {
-//        prepareSystemRepository("dateFormatValidator.xml");
-//
-//        TestBean bean = new TestBean();
-//        bean.defaultFormatInput = "2023/05/11";
-//
-//        Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
-//
-//        Assert.assertTrue(violations.isEmpty());
-//
-//    }
-//
+    @Test
+    public void システムリポジトリに設定しているデフォルト書式で検証できる() {
+        prepareSystemRepository("dateFormatValidator.xml");
+
+        TestBean bean = new TestBean();
+        bean.defaultFormatInput = "2023/05/11";
+
+        Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
+
+        Assert.assertTrue(violations.isEmpty());
+
+    }
+
     @Test
     public void システムリポジトリに設定していない場合のデフォルト書式で検証できる() {
         TestBean bean = new TestBean();
@@ -118,6 +119,27 @@ public class DateFormatTest extends BeanValidationTestCase {
 
     }
 
+    @Test
+    public void リストとグループが正しく動作する() {
+        ListAndGroupsBean bean = new ListAndGroupsBean();
+        bean.listGroupsInput = "2023_05_12";
+
+        Set<ConstraintViolation<ListAndGroupsBean>> violations1 = validator.validate(bean, Test2.class);
+        Assert.assertTrue(violations1.isEmpty());
+
+        Set<ConstraintViolation<ListAndGroupsBean>> violations2 = validator.validate(bean, Test1.class);
+        Assert.assertEquals(1, violations2.size());
+        ConstraintViolation<ListAndGroupsBean> v = violations2.iterator().next();
+        Assert.assertEquals("listGroupsInput", v.getPropertyPath().toString());
+        Assert.assertEquals("日付書式に一致しません。", v.getMessage());
+    }
+
+
+    private interface Test1 {
+    }
+
+    private interface Test2 {
+    }
 
     private static class TestBean {
 
@@ -134,5 +156,13 @@ public class DateFormatTest extends BeanValidationTestCase {
         @DateFormat("ABCD")
         String invalidFormatInput;
 
+    }
+
+    private static class ListAndGroupsBean {
+        @DateFormat.List({
+            @DateFormat(groups = {Test1.class}),
+            @DateFormat(value = "yyyy_MM_dd", groups = {Test2.class})
+        })
+        private String listGroupsInput;
     }
 }
