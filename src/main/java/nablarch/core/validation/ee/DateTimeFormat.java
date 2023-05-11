@@ -11,7 +11,6 @@ import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.Locale;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -47,8 +46,6 @@ public @interface DateTimeFormat {
     Type type();
 
     String formatString() default "";
-
-
 
     enum Type {
         DATE("yyyy/MM/dd"),
