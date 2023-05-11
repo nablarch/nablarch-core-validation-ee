@@ -1,13 +1,8 @@
 package nablarch.core.validation.ee;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
-import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -46,7 +41,7 @@ public class DateFormatTest extends BeanValidationTestCase {
 
     }
 
-//    @Test
+    //    @Test
 //    public void システムリポジトリに設定しているデフォルト書式で検証できる() {
 //        prepareSystemRepository("dateFormatValidator.xml");
 //
@@ -91,7 +86,7 @@ public class DateFormatTest extends BeanValidationTestCase {
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<TestBean> v = violations.iterator().next();
-        Assert.assertEquals("日付書式[yyyy-MM-dd]に一致しません。", v.getMessage());
+        Assert.assertEquals("日付書式に一致しません。", v.getMessage());
 
     }
 
@@ -105,7 +100,7 @@ public class DateFormatTest extends BeanValidationTestCase {
         Assert.assertEquals(1, violations.size());
 
         ConstraintViolation<TestBean> v = violations.iterator().next();
-        Assert.assertEquals("日付書式[yyyy-MM-dd]に一致しません。", v.getMessage());
+        Assert.assertEquals("日付書式に一致しません。", v.getMessage());
 
     }
 
@@ -122,7 +117,6 @@ public class DateFormatTest extends BeanValidationTestCase {
         validator.validate(bean);
 
     }
-
 
 
     private static class TestBean {
