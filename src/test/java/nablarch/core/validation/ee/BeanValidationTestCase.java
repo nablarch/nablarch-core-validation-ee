@@ -31,8 +31,11 @@ public abstract class BeanValidationTestCase {
     }
 
     void prepareSystemRepository() {
-        SystemRepository.load(new DiContainer(new XmlComponentDefinitionLoader
-                                                      ("nablarch/core/validation/ee/beanValidation.xml")));
+        prepareSystemRepository("nablarch/core/validation/ee/beanValidation.xml");
+    }
+
+    void prepareSystemRepository(String componentFileUrl) {
+        SystemRepository.load(new DiContainer(new XmlComponentDefinitionLoader(componentFileUrl)));
     }
 
     protected <T> List<ConstraintViolation<T>> sort(Set<ConstraintViolation<T>> violations) {
