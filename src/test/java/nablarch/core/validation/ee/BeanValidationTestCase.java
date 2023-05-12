@@ -24,7 +24,6 @@ public abstract class BeanValidationTestCase {
 
     protected final Validator validator = ValidatorUtil.getValidator();
 
-
     @After
     public void tearDown() {
         SystemRepository.clear();
