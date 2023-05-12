@@ -101,7 +101,7 @@ public @interface DateFormat {
         public static final String DEFAULT_FORMAT = "yyyyMMdd";
 
         /** デフォルト日付書式を設定するプロパティ名 **/
-        public static final String PROP_DEFAULT_FORMAT = "nablarch.dateFormatValidator.defaultFormat";
+        public static final String DEFAULT_FORMAT_KEY = "nablarch.dateFormatValidator.defaultFormat";
 
         /** 日付書式 */
         private String formatString;
@@ -144,7 +144,7 @@ public @interface DateFormat {
          * @return 日付書式
          */
         private String getDefaultFormat() {
-            String format = SystemRepository.get(PROP_DEFAULT_FORMAT);
+            String format = SystemRepository.get(DEFAULT_FORMAT_KEY);
             if (format != null) {
                 return format;
             }
