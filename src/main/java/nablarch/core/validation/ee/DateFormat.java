@@ -125,13 +125,9 @@ public @interface DateFormat {
 
         @Override
         public boolean isValid(String date, ConstraintValidatorContext context) {
-
             if (StringUtil.isNullOrEmpty(date)) {
                 return true;
             }
-
-            // DateUtil.getParsedDate()では、入力文字列が厳密にフォーマットに一致することを確認している。
-            // そのため、単に非nullチェックを実施すればよい。
             return DateUtil.getParsedDate(date, formatString) != null;
 
         }
