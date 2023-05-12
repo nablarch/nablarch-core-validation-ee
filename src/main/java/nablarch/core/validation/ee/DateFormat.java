@@ -65,7 +65,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author Takayuki UCHIDA
  */
-
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
 @Retention(RUNTIME)
 @Documented
@@ -87,8 +86,14 @@ public @interface DateFormat {
      */
     Class<? extends Payload>[] payload() default {};
 
+    /**
+     * 日付書式
+     */
     String value() default "";
 
+    /**
+     * 複数指定用のアノテーション
+     */
     @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
     @Retention(RUNTIME)
     @Documented
@@ -96,31 +101,26 @@ public @interface DateFormat {
         DateFormat[] value();
     }
 
+    /**
+     * 日付書式をバリデーションする{@link ConstraintValidator}クラス。
+     */
     class DateFormatValidator implements ConstraintValidator<DateFormat, String> {
 
+        /** デフォルト日付書式 **/
         public static final String DEFAULT_FORMAT = "yyyyMMdd";
+
+        /** デフォルト日付書式を設定するプロパティ名 **/
         public static final String PROPS_DEFAULT_FORMAT = "nablarch.dateFormatValidator.defaultFormat";
+
+        /** 日付書式 */
         private String formatString;
 
         @Override
         public void initialize(DateFormat constraintAnnotation) {
             String value = constraintAnnotation.value();
-
-            this.formatString = StringUtil.isNullOrEmpty(value) ? getDefaultFormat() : value;
+            formatString = StringUtil.isNullOrEmpty(value) ? getDefaultFormat() : value;
 
             validateFormat(formatString);
-        }
-
-        /**
-         * @param formatString
-         */
-        private void validateFormat(String formatString) {
-            try {
-                DateUtil.formatDate(new Date(), formatString);
-
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException("Invalid date format string. [" + formatString + "]");
-            }
         }
 
         @Override
@@ -130,6 +130,21 @@ public @interface DateFormat {
             }
             return DateUtil.getParsedDate(date, formatString) != null;
 
+        }
+
+        /**
+         * 指定された日付書式が有効であるか検証します。
+         *
+         * @param formatString 日付書式
+         * @throws IllegalStateException 日付書式が不正である場合
+         */
+        private void validateFormat(String formatString) throws IllegalStateException {
+            try {
+                DateUtil.formatDate(new Date(), formatString);
+
+            } catch (Exception e) {
+                throw new IllegalStateException("Invalid date format. [" + formatString + "]");
+            }
         }
 
         /**
@@ -144,7 +159,5 @@ public @interface DateFormat {
             }
             return DEFAULT_FORMAT;
         }
-
-
     }
 }
