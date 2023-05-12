@@ -137,7 +137,9 @@ public @interface DateFormat {
         }
 
         /**
-         * @return
+         * デフォルトの日付書式を取得する。
+         *
+         * @return 日付書式
          */
         private String getDefaultFormat() {
             String format = SystemRepository.get(PROPS_DEFAULT_FORMAT);
