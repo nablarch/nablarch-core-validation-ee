@@ -67,9 +67,31 @@ public class DateFormatTest extends BeanValidationTestCase {
     }
 
     @Test
-    public void 入力値が指定した書式に一致する場合_検証に成功する() {
+    public void 入力値が指定した日付書式に一致する場合_検証に成功する() {
         TestBean bean = new TestBean();
-        bean.withFormatInput = "2023-05-11";
+        bean.dateFormat = "2023-05-11";
+
+        Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
+
+        Assert.assertTrue(violations.isEmpty());
+
+    }
+
+    @Test
+    public void 入力値が指定した日時書式に一致する場合_検証に成功する() {
+        TestBean bean = new TestBean();
+        bean.dateTimeFormat = "2023-05-11 12:00:59";
+
+        Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
+
+        Assert.assertTrue(violations.isEmpty());
+
+    }
+
+    @Test
+    public void 入力値が指定した時刻書式に一致する場合_検証に成功する() {
+        TestBean bean = new TestBean();
+        bean.timeFormat = "12:00:59";
 
         Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
 
@@ -80,7 +102,7 @@ public class DateFormatTest extends BeanValidationTestCase {
     @Test
     public void 入力値が指定した書式に一致しない場合_検証に失敗する() {
         TestBean bean = new TestBean();
-        bean.withFormatInput = "2023-05-11 20:58:49";
+        bean.dateFormat = "2023-05-11 20:58:49";
 
         Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
 
@@ -94,7 +116,7 @@ public class DateFormatTest extends BeanValidationTestCase {
     @Test
     public void 入力値が日付形式ではない場合_検証に失敗する() {
         TestBean bean = new TestBean();
-        bean.withFormatInput = "hogehoge";
+        bean.dateFormat = "hogehoge";
 
         Set<ConstraintViolation<TestBean>> violations = validator.validate(bean);
 
@@ -112,7 +134,7 @@ public class DateFormatTest extends BeanValidationTestCase {
 
         expectedException.expectCause(Matchers.allOf(
             Matchers.instanceOf(IllegalStateException.class),
-            Matchers.hasProperty("message", Matchers.is("Invalid date format string. [ABCD]"))
+            Matchers.hasProperty("message", Matchers.is("Invalid date format. [ABCD]"))
         ));
 
         validator.validate(bean);
@@ -147,8 +169,13 @@ public class DateFormatTest extends BeanValidationTestCase {
         String defaultFormatInput;
 
         @DateFormat("yyyy-MM-dd")
-        String withFormatInput;
+        String dateFormat;
 
+        @DateFormat("yyyy-MM-dd HH:mm:ss")
+        String dateTimeFormat;
+
+        @DateFormat("HH:mm:ss")
+        String timeFormat;
     }
 
     private static class TestFailBean {
