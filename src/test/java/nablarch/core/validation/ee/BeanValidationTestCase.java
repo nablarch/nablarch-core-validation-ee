@@ -24,18 +24,14 @@ public abstract class BeanValidationTestCase {
 
     protected final Validator validator = ValidatorUtil.getValidator();
 
-
     @After
     public void tearDown() {
         SystemRepository.clear();
     }
 
     void prepareSystemRepository() {
-        prepareSystemRepository("nablarch/core/validation/ee/beanValidation.xml");
-    }
-
-    void prepareSystemRepository(String componentFileUrl) {
-        SystemRepository.load(new DiContainer(new XmlComponentDefinitionLoader(componentFileUrl)));
+        SystemRepository.load(new DiContainer(new XmlComponentDefinitionLoader
+                                                      ("nablarch/core/validation/ee/beanValidation.xml")));
     }
 
     protected <T> List<ConstraintViolation<T>> sort(Set<ConstraintViolation<T>> violations) {

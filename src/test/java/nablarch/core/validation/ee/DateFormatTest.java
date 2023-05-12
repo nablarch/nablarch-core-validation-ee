@@ -1,5 +1,7 @@
 package nablarch.core.validation.ee;
 
+import nablarch.core.repository.ObjectLoader;
+import nablarch.core.repository.SystemRepository;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,6 +10,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import javax.validation.ConstraintViolation;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 public class DateFormatTest extends BeanValidationTestCase {
@@ -17,7 +21,8 @@ public class DateFormatTest extends BeanValidationTestCase {
 
     @Before
     public void setUp() {
-        ValidatorUtil.clearCachedValidatorFactory();
+        // デフォルト書式の取得元をシステムリポジトリとリテラルで切り替えたいため、
+        // Validatorのinitializeが実行されるようにキャッシュを削除しておく。
         ValidatorUtil.getValidatorFactory().close();
     }
 
@@ -44,7 +49,11 @@ public class DateFormatTest extends BeanValidationTestCase {
 
     @Test
     public void システムリポジトリに設定しているデフォルト書式で検証できる() {
-        prepareSystemRepository("dateFormatValidator.xml");
+        SystemRepository.load(new ObjectLoader() {
+            public Map<String, Object> load() {
+                return Collections.<String, Object>singletonMap("nablarch.dateFormatValidator.defaultFormat", "yyyy/MM/dd");
+            }
+        });
 
         TestBean bean = new TestBean();
         bean.defaultFormatInput = "2023/05/11";
