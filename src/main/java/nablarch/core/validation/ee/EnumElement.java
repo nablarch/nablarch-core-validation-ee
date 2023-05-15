@@ -87,6 +87,9 @@ public @interface EnumElement {
      */
     Class<? extends Payload>[] payload() default {};
 
+    /**
+     * 許容する値を含む列挙型
+     */
     Class<? extends Enum<?>> value();
 
     /**
@@ -104,13 +107,28 @@ public @interface EnumElement {
         EnumElement[] value();
     }
 
+    /**
+     * {@link EnumElement}で許容する列挙型の値を実装するためのインタフェース。
+     *
+     * @param <T> 値の型
+     */
+    @Published
     interface WithValue<T> {
+
+        /**
+         * 許容する値を取得する。
+         *
+         * @return 値
+         */
         T getValue();
     }
 
-
+    /**
+     * 許容値を列挙型でバリデーションする{@link ConstraintValidator}クラス。
+     */
     class EnumElementValidator implements ConstraintValidator<EnumElement, Object> {
 
+        /** {@link EnumElement} の設定に応じたバリデータ */
         private Validator validator;
 
         /**
@@ -145,6 +163,13 @@ public @interface EnumElement {
          * 列挙型定数と入力値を比較するバリデータのインタフェース。
          */
         private interface Validator {
+
+            /**
+             * 入力値を検証する。
+             *
+             * @param value 入力値
+             * @return 許容する入力値であれば {@code true}
+             */
             boolean isValid(Object value);
         }
 
@@ -153,6 +178,7 @@ public @interface EnumElement {
          */
         private static class WithValueValidator implements Validator {
 
+            /** 列挙型要素 */
             private final WithValue<?>[] enums;
 
             public WithValueValidator(WithValue<?>[] enums) {
@@ -181,7 +207,10 @@ public @interface EnumElement {
          */
         private static class ConstantValidator implements Validator {
 
+            /** 列挙型要素 */
             private final Enum<?>[] enums;
+
+            /** 大文字小文字を区別するか否か（{@code true}: 区別しない） */
             private final boolean caseSensitive;
 
             ConstantValidator(Enum<?>[] enums, boolean caseSensitive) {
