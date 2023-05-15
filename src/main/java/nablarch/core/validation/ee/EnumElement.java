@@ -104,6 +104,12 @@ public @interface EnumElement {
         EnumElement[] value();
     }
 
+    /**
+     * {@link EnumElement}で許容する列挙型の値を実装するためのインタフェース。
+     *
+     * @param <T> 値の型
+     */
+    @Published
     interface WithValue<T> {
         T getValue();
     }
