@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
