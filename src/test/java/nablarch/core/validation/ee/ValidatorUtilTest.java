@@ -15,6 +15,7 @@ import javax.validation.TraversableResolver;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -259,6 +260,98 @@ public class ValidatorUtilTest {
         bean.requiredTest = "test";
         ValidatorUtil.validate(bean);
     }
+
+    /**
+     * グループを指定したBean Validationが実行できることを確認する。
+     * Test1グループの検証に成功する場合、例外などが発生せずに正常に終わること。
+     */
+    @Test
+    public void testGroupTest1() {
+        SampleBean bean = new SampleBean();
+        bean.groupTest = "ABCDEFG";
+
+        try {
+            ValidatorUtil.validate(bean, SampleBean.Test1.class);
+        } catch (Exception e) {
+            fail("バリデーションに成功するはず");
+        }
+    }
+
+    /**
+     * グループを指定したBean Validationが実行できることを確認する。
+     * Test2グループの検証に失敗する場合、バリデーションエラーとして検出できること。
+     */
+    @Test
+    public void testGroupTest2() {
+        SampleBean bean = new SampleBean();
+        bean.groupTest = "ABCDEFG";
+
+        try {
+            ValidatorUtil.validate(bean, SampleBean.Test2.class);
+            fail("バリデーションに失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つなので、エラー数は1", e.getMessages(), hasSize(1));
+            String message = e.getMessages().get(0).formatMessage();
+            assertThat("次のエラーメッセージが含まれているはず", message, is("数字でないですよ。"));
+
+        }
+
+    }
+
+    @Test
+    public void testNestedGroupDefault() {
+        SampleBean bean = new SampleBean();
+        SampleBean.NestedGroupTestBean nested = new SampleBean.NestedGroupTestBean();
+        nested.nestedGroupTestString = "abcd";
+        bean.nestedGroupTestBean = nested;
+        bean.requiredTest = "test";
+
+        try {
+            ValidatorUtil.validate(bean, Default.class);
+        } catch (Exception e) {
+            fail("検証に成功するはず");
+        }
+    }
+
+    @Test
+    public void testNestedGroupTest1() {
+        SampleBean bean = new SampleBean();
+        SampleBean.NestedGroupTestBean nested = new SampleBean.NestedGroupTestBean();
+        nested.nestedGroupTestString = "abcd";
+        nested.ignoredProperty = "123";
+        bean.nestedGroupTestBean = nested;
+
+        try {
+            ValidatorUtil.validate(bean, SampleBean.Test2.class);
+            fail("検証に失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つなので、エラー数は1", e.getMessages(), hasSize(1));
+            String message =  e.getMessages().get(0).formatMessage();
+            assertThat("次のエラーメッセージが含まれているはず", message, is("2文字で入力してください。"));
+        }
+    }
+
+    // TODO: 複数のグループ指定
+    // TODO: プロパティを指定
+
+    @Test
+    public void testNestedGroup() {
+        SampleBean bean = new SampleBean();
+        SampleBean.NestedGroupTestBean nested = new SampleBean.NestedGroupTestBean();
+        nested.nestedGroupTestString = "abcd";
+        nested.ignoredProperty = "123";
+        bean.nestedGroupTestBean = nested;
+
+        try {
+            ValidatorUtil.validate(bean, SampleBean.Test2.class);
+            fail("検証に失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つなので、エラー数は1", e.getMessages(), hasSize(1));
+            String message =  e.getMessages().get(0).formatMessage();
+            assertThat("次のエラーメッセージが含まれているはず", message, is("2文字で入力してください。"));
+        }
+    }
+
 
     public static final class CustomValidatorFactory implements ValidatorFactory {
         @Override

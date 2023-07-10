@@ -126,6 +126,51 @@ public final class ValidatorUtil {
         }
     }
 
+    /**
+     * 指定されたBeanオブジェクトに対してBean Validationを行う。
+     * {@code groups}に1個以上の値が存在する場合、{@code groups}をBean Validationにおけるグループとして使用する。
+     * <p/>
+     * バリデーションエラーが発生した場合には、発生した全てのメッセージを持つ{@link ApplicationException}を送出する。
+     *
+     * @see <a href="https://beanvalidation.org/1.1/spec/#constraintdeclarationvalidationprocess-groupsequence">4.4. Group and group sequence</a>
+     *
+     * @param bean Bean Validation対象のオブジェクト
+     * @param groups Bean Validationのグループ
+     * @throws ApplicationException バリデーションエラーが発生した場合
+     */
+    @Published
+    public static void validate(Object bean, Class<?>... groups) {
+        final Validator validator = getValidator();
+        final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(bean, groups);
+        if (!constraintViolations.isEmpty()) {
+            final List<Message> messages = new ConstraintViolationConverterFactory().create().convert(constraintViolations);
+            throw new ApplicationException(messages);
+        }
+    }
+
+
+    /**
+     * 指定されたBeanオブジェクトのプロパティに対してBean Validationを行う。
+     * {@code groups}に1個以上の値が存在する場合、{@code groups}をBean Validationにおけるグループとして使用する。
+     * <p/>
+     * バリデーションエラーが発生した場合には、発生した全てのメッセージを持つ{@link ApplicationException}を送出する。
+     *
+     * @param bean Bean Validation対象のオブジェクト
+     * @param propertyName Bean Validation対象のプロパティ名
+     * @param groups Bean Validationのグループ
+     * @throws ApplicationException バリデーションエラーが発生した場合
+     */
+    @Published
+    public static void validateProperty(Object bean, String propertyName, Class<?>... groups) {
+        final Validator validator = getValidator();
+        final Set<ConstraintViolation<Object>> constraintViolations = validator.validateProperty(bean, propertyName, groups);
+        if (!constraintViolations.isEmpty()) {
+            final List<Message> messages = new ConstraintViolationConverterFactory().create().convert(constraintViolations);
+            throw new ApplicationException(messages);
+        }
+
+    }
+
     /** デフォルトの{@link ValidatorFactoryBuilder}実装。 */
     private static class DefaultValidatorFactory extends ValidatorFactoryBuilder {
 
