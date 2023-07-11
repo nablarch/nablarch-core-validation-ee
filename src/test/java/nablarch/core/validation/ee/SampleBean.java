@@ -42,14 +42,14 @@ public class SampleBean {
 
     @SystemChar(charsetDef = "数字", groups = Test1.class)
     @Length(max = 5, min = 5, groups = Test2.class)
-    String multiGroupSepcified;
+    String multiGroupSpecifiedTest;
 
     @Length(min = 2, max = 2, groups = Test1.class)
     @SystemChar(charsetDef = "数字", groups = Test2.class)
-    String specifiedProperty;
+    String specifiedPropertyTest;
 
     @SystemChar(charsetDef = "英大文字", groups = Test1.class)
-    String ignoredProperty;
+    String ignoredPropertyTest;
 
 
     public interface Test1 {}

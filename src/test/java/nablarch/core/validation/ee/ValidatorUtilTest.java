@@ -15,7 +15,6 @@ import javax.validation.TraversableResolver;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -302,7 +301,7 @@ public class ValidatorUtilTest {
     @Test
     public void testMultiGroupSpecified() {
         SampleBean bean = new SampleBean();
-        bean.multiGroupSepcified = "ABCDEFG";
+        bean.multiGroupSpecifiedTest = "ABCDEFG";
 
         try {
             ValidatorUtil.validateWithGroup(bean, SampleBean.Test1.class, SampleBean.Test2.class);
@@ -324,11 +323,11 @@ public class ValidatorUtilTest {
     @Test
     public void testSpecifyPropertyAndGroup() {
         SampleBean bean = new SampleBean();
-        bean.specifiedProperty = "abcd";
-        bean.ignoredProperty = "123";
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
 
         try {
-            ValidatorUtil.validateProperty(bean, "specifiedProperty", SampleBean.Test1.class);
+            ValidatorUtil.validateProperty(bean, "specifiedPropertyTest", SampleBean.Test1.class);
             fail("検証に失敗するはず");
         } catch (ApplicationException e) {
             assertThat("エラーになるプロパティは1つ、エラーになる検証ルールは1つなので、エラー数は1", e.getMessages(), hasSize(1));
@@ -343,11 +342,11 @@ public class ValidatorUtilTest {
     @Test
     public void testSpecifyPropertyWithoutGroup() {
         SampleBean bean = new SampleBean();
-        bean.specifiedProperty = "abcd";
-        bean.ignoredProperty = "123";
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
 
         try {
-            ValidatorUtil.validateProperty(bean, "specifiedProperty");
+            ValidatorUtil.validateProperty(bean, "specifiedPropertyTest");
         } catch (ApplicationException e) {
             fail("検証はスキップするはず");
         }
@@ -359,8 +358,8 @@ public class ValidatorUtilTest {
     @Test
     public void testSpecifyNonExistentPropertyName() {
         SampleBean bean = new SampleBean();
-        bean.specifiedProperty = "abcd";
-        bean.ignoredProperty = "123";
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
 
         try {
             ValidatorUtil.validateProperty(bean, "foobar", SampleBean.Test1.class);
