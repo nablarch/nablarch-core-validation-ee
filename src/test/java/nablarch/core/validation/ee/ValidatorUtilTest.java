@@ -301,7 +301,7 @@ public class ValidatorUtilTest {
     @Test
     public void testMultiGroupSpecified() {
         SampleBean bean = new SampleBean();
-        bean.multiGroupSpecifiedTest = "ABCDEFG";
+        bean.multiGroupTest = "ABCDEFG";
 
         try {
             ValidatorUtil.validateWithGroup(bean, SampleBean.Test1.class, SampleBean.Test2.class);

@@ -42,7 +42,7 @@ public class SampleBean {
 
     @SystemChar(charsetDef = "数字", groups = Test1.class)
     @Length(max = 5, min = 5, groups = Test2.class)
-    String multiGroupSpecifiedTest;
+    String multiGroupTest;
 
     @Length(min = 2, max = 2, groups = Test1.class)
     @SystemChar(charsetDef = "数字", groups = Test2.class)
