@@ -127,21 +127,34 @@ public final class ValidatorUtil {
     }
 
     /**
-     * 指定されたBeanオブジェクトに対してBean Validationを行う。
-     * {@code groups}に1個以上の値が存在する場合、{@code groups}をBean Validationにおけるグループとして使用する。
+     * 指定されたBeanオブジェクトに対して、指定したグループを使用してBean Validationを行う。
+     * 本メソッドを使用する場合は、Bean Validationにおけるグループを1個以上指定する必要がある。
      * <p/>
      * バリデーションエラーが発生した場合には、発生した全てのメッセージを持つ{@link ApplicationException}を送出する。
      *
      * @see <a href="https://beanvalidation.org/1.1/spec/#constraintdeclarationvalidationprocess-groupsequence">4.4. Group and group sequence</a>
      *
      * @param bean Bean Validation対象のオブジェクト
-     * @param groups Bean Validationのグループ
+     * @param group Bean Validationのグループ（指定必須）
+     * @param groups Bean Validationのグループ（任意の個数を指定）
      * @throws ApplicationException バリデーションエラーが発生した場合
      */
     @Published
-    public static void validate(Object bean, Class<?>... groups) {
+    public static void validateWithGroup(Object bean, Class<?> group, Class<?>... groups) {
+        // 明示的に1個以上のClass<?>を与えるシグネチャとしているのは、メソッドの使用意図を明確にするためである。
+        // グループを指定しないバリデーションはvalidate(Object)の役目なので、本メソッドでは1個以上のグループを必須とするほうが、メソッド名から推測できる挙動と合致している。
+        //
+        // 【validateWithGroup(Object, Class<?>...)のようなシグネチャにした場合】
+        // 可変長引数が0個の場合は、validate(Object)と全く同じ挙動となる。
+        // 同じ挙動となること自体は間違いではないが、同じ挙動をする2つのメソッドが存在すると、利用者がどちらを使えばよいか混乱する可能性がある。
+        // またメソッドの使用意図を踏まえると、validateWithGroup(Object, Class<?>...)の可変長引数0個のときの挙動は文書化するべきではないが、
+        // 利用者側で、validate(Object)と同じ挙動をするメソッドとして使用してしまう可能性はありうる。
+        final Class<?>[] g = new Class<?>[1 + groups.length];
+        g[0] = group;
+        System.arraycopy(groups, 0, g, 1, g.length - 1);
+
         final Validator validator = getValidator();
-        final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(bean, groups);
+        final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(bean, g);
         if (!constraintViolations.isEmpty()) {
             final List<Message> messages = new ConstraintViolationConverterFactory().create().convert(constraintViolations);
             throw new ApplicationException(messages);
