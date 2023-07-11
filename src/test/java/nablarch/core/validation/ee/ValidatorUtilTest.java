@@ -260,6 +260,115 @@ public class ValidatorUtilTest {
         ValidatorUtil.validate(bean);
     }
 
+    /**
+     * グループを指定したBean Validationが実行できることを確認する。
+     * Test1グループの検証に成功する場合、例外などが発生せずに正常に終わること。
+     */
+    @Test
+    public void testGroupTest1() {
+        SampleBean bean = new SampleBean();
+        bean.groupTest = "ABCDEFG";
+
+        try {
+            ValidatorUtil.validateWithGroup(bean, SampleBean.Test1.class);
+        } catch (Exception e) {
+            fail("バリデーションに成功するはず");
+        }
+    }
+
+    /**
+     * グループを指定したBean Validationが実行できることを確認する。
+     * Test2グループの検証に失敗する場合、バリデーションエラーとして検出できること。
+     */
+    @Test
+    public void testGroupTest2() {
+        SampleBean bean = new SampleBean();
+        bean.groupTest = "ABCDEFG";
+
+        try {
+            ValidatorUtil.validateWithGroup(bean, SampleBean.Test2.class);
+            fail("バリデーションに失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つなので、エラー数は1", e.getMessages(), hasSize(1));
+            assertThat("次のエラーメッセージが含まれているはず", e.getMessages().get(0).formatMessage(), is("数字でないですよ。"));
+        }
+    }
+
+    /**
+     * グループを指定したBean Validationが実行できることを確認する。
+     * 複数のグループを指定して検証できること。
+     */
+    @Test
+    public void testMultiGroupSpecified() {
+        SampleBean bean = new SampleBean();
+        bean.multiGroupTest = "ABCDEFG";
+
+        try {
+            ValidatorUtil.validateWithGroup(bean, SampleBean.Test1.class, SampleBean.Test2.class);
+            fail("バリデーションに失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つで、2つのグループの検証でエラーになっているので、エラー数は2", e.getMessages(), hasSize(2));
+            List<String> messages = Arrays.asList(
+                    e.getMessages().get(0).formatMessage(),
+                    e.getMessages().get(1).formatMessage()
+            );
+            assertThat("次のエラーメッセージが含まれているはず", messages, is(containsInAnyOrder("5文字で入力してください。", "数字でないですよ。")));
+        }
+    }
+
+    /**
+     * プロパティとグループを指定したBean Validationが実行できることを確認する。
+     * 指定したプロパティが指定したグループでの検証ルールで検証できること。
+     */
+    @Test
+    public void testSpecifyPropertyAndGroup() {
+        SampleBean bean = new SampleBean();
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
+
+        try {
+            ValidatorUtil.validateProperty(bean, "specifiedPropertyTest", SampleBean.Test1.class);
+            fail("検証に失敗するはず");
+        } catch (ApplicationException e) {
+            assertThat("エラーになるプロパティは1つ、エラーになる検証ルールは1つなので、エラー数は1", e.getMessages(), hasSize(1));
+            assertThat("次のエラーメッセージが含まれているはず", e.getMessages().get(0).formatMessage(), is("2文字で入力してください。"));
+        }
+    }
+
+    /**
+     * プロパティ指定したBean Validationが実行できることを確認する。
+     * 指定したプロパティがデフォルトグループ指定時は検証されないこと。
+     */
+    @Test
+    public void testSpecifyPropertyWithoutGroup() {
+        SampleBean bean = new SampleBean();
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
+
+        try {
+            ValidatorUtil.validateProperty(bean, "specifiedPropertyTest");
+        } catch (ApplicationException e) {
+            fail("検証はスキップするはず");
+        }
+    }
+
+    /**
+     * 存在しないプロパティを指定した場合に実行時エラーが発生することを確認する。
+     */
+    @Test
+    public void testSpecifyNonExistentPropertyName() {
+        SampleBean bean = new SampleBean();
+        bean.specifiedPropertyTest = "abcd";
+        bean.ignoredPropertyTest = "123";
+
+        try {
+            ValidatorUtil.validateProperty(bean, "foobar", SampleBean.Test1.class);
+            fail("検証に失敗するはず");
+        } catch (IllegalArgumentException e) {
+            assertThat("次のエラーメッセージが含まれているはず", e.getMessage(), is("HV000039: Invalid property path. Either there is no property foobar in entity nablarch.core.validation.ee.SampleBean or it is not possible to cascade to the property."));
+        }
+    }
+
     public static final class CustomValidatorFactory implements ValidatorFactory {
         @Override
         public Validator getValidator() { return null; }
