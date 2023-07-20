@@ -366,7 +366,7 @@ public class ValidatorUtilTest {
             ValidatorUtil.validateProperty(bean, "foobar", SampleBean.Test1.class);
             fail("検証に失敗するはず");
         } catch (IllegalArgumentException e) {
-            assertThat("次のエラーメッセージが含まれているはず", e.getMessage(), is("HV000039: Invalid property path. Either there is no property foobar in entity nablarch.core.validation.ee.SampleBean or it is not possible to cascade to the property."));
+            assertThat("次のエラーメッセージが含まれているはず", e.getMessage(), is("HV000227: The validated type nablarch.core.validation.ee.SampleBean does not specify the property: foobar"));
         }
     }
 
