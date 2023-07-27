@@ -15,13 +15,6 @@ public class SampleBean {
     @Required
     String requiredTest;
 
-    //@NumberRange(min = -1.2, max = 10.1)
-    //Number numberRangeTest;
-
-    //@Digits(integer = 4, fraction = 1, commaSeparated = true)
-    //String digitsTest;
-
-    //@Size(min = 1, max = 10)
     Collection<?> sizeTest;
 
     @SystemChar(charsetDef = "ascii")

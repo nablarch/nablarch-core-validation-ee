@@ -24,10 +24,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -63,11 +63,10 @@ public class ValidatorUtilTest {
 
     /**
      * Beanを指定してvalidationが簡単に実行できることを確認する。
-     *
      * バリデーションエラーの項目があるので、{@link ApplicationException}が送出されること
      */
     @Test
-    public void testValidateToErrorObject() throws Exception {
+    public void testValidateToErrorObject() {
         SampleBean bean = new SampleBean();
         bean.lengthTest = "123456";
         try {
@@ -87,7 +86,7 @@ public class ValidatorUtilTest {
      * 項目名を付加するコンバータを使った場合、メッセージの先頭に項目名が付加されること。
      */
     @Test
-    public void testValidateToErrorObjectWithItemName() throws Exception {
+    public void testValidateToErrorObjectWithItemName() {
         addItemNamedConverter();
 
         SampleBean bean = new SampleBean();
@@ -120,7 +119,7 @@ public class ValidatorUtilTest {
      *
      */
     @Test
-    public void testValidateToErrorObjectSpecifiedProperty() throws Exception{
+    public void testValidateToErrorObjectSpecifiedProperty() {
 
         SampleBean sampleBean = new SampleBean();
         sampleBean.lengthTest = "123456";
@@ -141,7 +140,7 @@ public class ValidatorUtilTest {
      *
      */
     @Test
-    public void testValidateToErrorObjectSpecifiedPropertyWithItemName() throws Exception{
+    public void testValidateToErrorObjectSpecifiedPropertyWithItemName() {
         addItemNamedConverter();
         SampleBean sampleBean = new SampleBean();
         sampleBean.lengthTest = "123456";
@@ -249,11 +248,10 @@ public class ValidatorUtilTest {
 
     /**
      * Beanを指定したvalidationが簡単に実行できることを確認する。
-     *
      * バリデーションエラーの項目がない場合、例外などが発生せずに正常に終わること。
      */
     @Test
-    public void testValidateToValidObject() throws Exception {
+    public void testValidateToValidObject() {
         SampleBean bean = new SampleBean();
         bean.lengthTest = "12345";
         bean.requiredTest = "test";
