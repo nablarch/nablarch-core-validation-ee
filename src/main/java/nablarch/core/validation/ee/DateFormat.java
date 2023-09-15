@@ -42,6 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </ol>
  * <p>
  * <p/>
+ * 指定可能な日付書式は、{@link java.text.SimpleDateFormat}に準拠する。
  * 実装例を以下に示す。
  * <pre>
  *  private static class SampleBean {
@@ -51,6 +52,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  *      {@code @DateFormat("yyyy-MM-dd")}
  *      String sampleFormatDate;
+ *
+ *      {@code @DateFormat("HH:mm:ss")}
+ *      String sampleFormatTime;
+ *
+ *      {@code @DateFormat("yyyy-MM-dd HH:mm:ss")}
+ *      String sampleFormatDateTime;
  *  }
  * </pre>
  *
