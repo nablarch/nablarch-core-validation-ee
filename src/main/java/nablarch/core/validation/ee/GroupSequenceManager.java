@@ -14,7 +14,7 @@ import nablarch.core.util.annotation.Published;
 public interface GroupSequenceManager {
 
     /**
-     * {@link javax.validation.GroupSequence}を定義したインタフェースの{@link Class}を取得する。
+     * {@link jakarta.validation.GroupSequence}を定義したインタフェースの{@link Class}を取得する。
      * 
      * @return グループシーケンスを既定したインタフェース
      */

@@ -1,7 +1,7 @@
 package com.example;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import nablarch.core.validation.ee.Length;
 import nablarch.core.validation.ee.NumberRange;

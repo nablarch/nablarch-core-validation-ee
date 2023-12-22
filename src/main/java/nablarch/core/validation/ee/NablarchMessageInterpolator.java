@@ -4,8 +4,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Validation;
 
 import nablarch.core.message.Message;
 import nablarch.core.message.MessageLevel;

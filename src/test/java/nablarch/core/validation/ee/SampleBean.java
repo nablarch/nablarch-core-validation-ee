@@ -23,7 +23,7 @@ public class SampleBean {
     @Domain("name")
     String domainTest;
 
-    @javax.validation.constraints.Digits(integer = 5, fraction = 2)
+    @jakarta.validation.constraints.Digits(integer = 5, fraction = 2)
     String digitsTest;
 
     @SystemChar.List({

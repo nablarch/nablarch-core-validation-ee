@@ -1,7 +1,7 @@
 package nablarch.core.validation.ee;
 
 import java.util.Set;
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.junit.Test;
 

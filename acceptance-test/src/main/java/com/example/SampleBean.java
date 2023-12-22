@@ -1,7 +1,7 @@
 package com.example;
 
 import java.util.List;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 import nablarch.core.validation.ee.Domain;
 import nablarch.core.validation.ee.Required;
