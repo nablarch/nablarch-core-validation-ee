@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,6 +67,21 @@ public class ContainerElementValidationTest extends BeanValidationTestCase {
     /** {@link java.util.Optional} の値に制約を指定した Bean */
     private static class OptionalBean {
         Optional<@SystemChar(charsetDef = "数字") String> optional;
+    }
+
+    /** {@link java.util.List} の要素に {@link Valid} を指定し、要素の Bean をカスケード検証する Bean */
+    private static class CascadeBean {
+        List<@Valid InnerForm> forms;
+    }
+
+    /** {@link CascadeBean} の要素となる Bean */
+    private static class InnerForm {
+        @Length(max = 3)
+        String name;
+
+        InnerForm(String name) {
+            this.name = name;
+        }
     }
 
     @Test
@@ -206,6 +222,20 @@ public class ContainerElementValidationTest extends BeanValidationTestCase {
 
         bean.optional = Optional.of("12a");
         assertSingleViolation(validator.validate(bean), "optional", "数字でないですよ。");
+    }
+
+    /**
+     * コンテナ要素に {@link Valid} を指定した場合、
+     * 要素の Bean に指定した制約で要素ごとに検証されること。
+     */
+    @Test
+    public void testCascadeValidationOfContainerElement() {
+        CascadeBean bean = new CascadeBean();
+        bean.forms = Arrays.asList(new InnerForm("abc"), new InnerForm(""));
+        assertThat(validator.validate(bean).isEmpty(), is(true));
+
+        bean.forms = Arrays.asList(new InnerForm("abc"), new InnerForm("abcd"));
+        assertSingleViolation(validator.validate(bean), "forms[1].name", "3文字以内で入力してください。");
     }
 
     private static <T> void assertSingleViolation(Set<ConstraintViolation<T>> violations,
