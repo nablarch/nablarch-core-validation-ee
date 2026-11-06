@@ -11,6 +11,7 @@ import jakarta.validation.Payload;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE_USE;
 
 /**
  * 指定されたドメイン定義に合致することを表わすアノテーション。
@@ -71,7 +72,7 @@ import static java.lang.annotation.ElementType.METHOD;
  * @author kawasima
  * @author T.Kawasaki
  */
-@Target({METHOD, FIELD})
+@Target({METHOD, FIELD, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = {DomainValidator.class})
@@ -88,7 +89,7 @@ public @interface Domain {
     Class<? extends Payload>[] payload() default {};
 
     /** 複数指定用のアノテーション */
-    @Target({METHOD, FIELD})
+    @Target({METHOD, FIELD, TYPE_USE})
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {

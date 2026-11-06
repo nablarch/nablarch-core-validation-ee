@@ -33,7 +33,7 @@ import static java.lang.annotation.ElementType.*;
  * 
  * @author T.Kawasaki
  */
-@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
+@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = {Length.LengthValidator.class})
@@ -50,7 +50,7 @@ public @interface Length {
     Class<? extends Payload>[] payload() default {};
 
     /** 複数指定用のアノテーション */
-    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
+    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
